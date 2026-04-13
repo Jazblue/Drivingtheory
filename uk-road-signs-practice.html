@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UK Road Signs Practice Test</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #131a2f;
+      --panel-2: #1a2442;
+      --text: #eef2ff;
+      --muted: #a8b3cf;
+      --accent: #7c9cff;
+      --good: #35c36b;
+      --bad: #ff6b6b;
+      --warn: #ffcc66;
+      --border: rgba(255,255,255,0.08);
+      --shadow: 0 20px 50px rgba(0,0,0,0.35);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: radial-gradient(circle at top, #162247 0%, var(--bg) 55%); color: var(--text); min-height: 100vh; }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 32px 20px 48px; }
+    .hero, .card { background: rgba(19, 26, 47, 0.92); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow); }
+    .hero { padding: 28px; margin-bottom: 20px; }
+    .eyebrow { display: inline-flex; gap: 8px; align-items: center; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--warn); background: rgba(255, 204, 102, 0.1); padding: 8px 10px; border-radius: 999px; border: 1px solid rgba(255, 204, 102, 0.18); }
+    h1 { margin: 14px 0 10px; font-size: clamp(28px, 4vw, 42px); line-height: 1.08; }
+    .sub { margin: 0; color: var(--muted); font-size: 16px; line-height: 1.6; max-width: 72ch; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 18px; }
+    .stat { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+    .stat .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .stat .v { margin-top: 8px; font-size: 24px; font-weight: 800; }
+    .card { padding: 22px; }
+    .empty { min-height: 260px; display: flex; align-items: center; justify-content: center; color: var(--muted); text-align: center; padding: 24px; border: 1px dashed var(--border); border-radius: 18px; background: rgba(255,255,255,0.02); }
+    .hide { display: none !important; }
+    .pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 999px; background: rgba(124,156,255,0.12); color: #c9d5ff; border: 1px solid rgba(124,156,255,0.18); font-size: 13px; margin-bottom: 16px; }
+    .progress { height: 10px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; margin: 18px 0 22px; }
+    .progress > div { height: 100%; width: 0%; background: linear-gradient(135deg, #7c9cff, #35c36b); transition: width 0.25s ease; }
+    .question { font-size: 24px; line-height: 1.45; margin-bottom: 18px; }
+    .options { display: grid; gap: 12px; }
+    .option { text-align: left; width: 100%; background: rgba(255,255,255,0.03); color: var(--text); border: 1px solid var(--border); padding: 14px 16px; border-radius: 14px; display: flex; gap: 14px; align-items: flex-start; cursor: pointer; }
+    .option .letter { min-width: 30px; width: 30px; height: 30px; border-radius: 999px; background: rgba(255,255,255,0.08); display: inline-flex; align-items: center; justify-content: center; font-weight: 800; margin-top: 2px; }
+    .option.correct { border-color: rgba(53,195,107,0.6); background: rgba(53,195,107,0.12); }
+    .option.wrong { border-color: rgba(255,107,107,0.55); background: rgba(255,107,107,0.12); }
+    .feedback { margin-top: 18px; padding: 16px; border-radius: 14px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); display: none; }
+    .feedback.show { display: block; }
+    .feedback strong { display: block; margin-bottom: 8px; }
+    .feedback.ok strong { color: var(--good); }
+    .feedback.no strong { color: var(--bad); }
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    button { border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; font: inherit; }
+    button:disabled { cursor: not-allowed; opacity: 0.55; }
+    .primary { background: linear-gradient(135deg, #7c9cff, #8f78ff); color: white; font-weight: 700; }
+    .secondary { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
+    .results { display: none; gap: 18px; margin-top: 8px; }
+    .results.show { display: grid; }
+    .review-item { padding: 16px; border: 1px solid var(--border); border-radius: 16px; background: rgba(255,255,255,0.03); margin-top: 14px; }
+    .review-item h4 { margin: 0 0 8px; font-size: 16px; }
+    .review-item p { color: var(--muted); margin: 8px 0 0; line-height: 1.55; }
+    .muted { color: var(--muted); font-size: 14px; line-height: 1.6; }
+    @media (max-width: 720px) { .stats { grid-template-columns: 1fr; } .question { font-size: 21px; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">UK road signs practice • unofficial • 40 questions</div>
+      <h1>UK road signs practice test</h1>
+      <p class="sub">A focused signs and markings practice quiz for a UK learner driver. One question at a time, with explanations and a review at the end.</p>
+      <div class="stats">
+        <div class="stat"><div class="k">Questions</div><div class="v">40</div></div>
+        <div class="stat"><div class="k">Focus</div><div class="v">Signs + markings</div></div>
+        <div class="stat"><div class="k">Mode</div><div class="v">One at a time</div></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div id="emptyState" class="empty">Press start and the quiz will present one road-sign question at a time.</div>
+      <div id="quizState" class="hide">
+        <div class="pill" id="metaPill">Question 1 of 40</div>
+        <div class="progress"><div id="bar"></div></div>
+        <div class="question" id="questionText"></div>
+        <div class="options" id="options"></div>
+        <div class="feedback" id="feedback"></div>
+        <div class="btn-row">
+          <button class="primary" id="nextBtn" disabled>Next question</button>
+          <button class="secondary" id="restartBtn">Restart quiz</button>
+        </div>
+      </div>
+      <div id="resultsState" class="results"></div>
+      <div class="btn-row" id="startRow">
+        <button class="primary" id="startBtn">Start road signs quiz</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const QUESTIONS = [{"id": 1, "category": "Warning signs", "question": "What do red triangular traffic signs usually mean?", "options": ["Mandatory instruction", "Warning of a hazard ahead", "Parking information", "Route confirmation"], "answer": 1, "explanation": "Red triangular signs usually warn of hazards ahead."}, {"id": 2, "category": "Mandatory signs", "question": "What do blue circular traffic signs usually mean?", "options": ["No entry", "Warning only", "Mandatory instruction", "Tourist information"], "answer": 2, "explanation": "Blue circular signs usually give a positive or mandatory instruction."}, {"id": 3, "category": "Regulatory signs", "question": "What does a red circular sign usually mean?", "options": ["A prohibition or restriction", "A tourist route", "A parking place", "A motorway service area"], "answer": 0, "explanation": "Red circular signs generally show something you must not do or a restriction that applies."}, {"id": 4, "category": "Stop and give way", "question": "What does a red octagonal sign mean?", "options": ["No entry", "Stop", "School crossing", "One-way street"], "answer": 1, "explanation": "The red octagonal sign is always the stop sign."}, {"id": 5, "category": "Stop and give way", "question": "What does an upside-down triangular sign mean?", "options": ["No overtaking", "Give way", "Dual carriageway ahead", "Steep hill down"], "answer": 1, "explanation": "The inverted triangle is the give way sign."}, {"id": 6, "category": "Speed limits", "question": "What does a circular sign with '30' inside a red ring mean?", "options": ["Recommended speed is 30 mph", "Minimum speed 30 mph", "Maximum speed 30 mph", "Average speed 30 mph"], "answer": 2, "explanation": "A number inside a red circle is a maximum speed limit."}, {"id": 7, "category": "Speed limits", "question": "What does a white circular sign with a black diagonal stripe usually mean?", "options": ["National speed limit applies", "Road closed", "No waiting", "No motor vehicles"], "answer": 0, "explanation": "This sign means the national speed limit applies."}, {"id": 8, "category": "Overtaking", "question": "What does a sign showing a motorcycle above a car in a red circle mean?", "options": ["Motorcycles only", "Cars and motorcycles parked ahead", "No overtaking", "No motor vehicles"], "answer": 2, "explanation": "This sign means no overtaking."}, {"id": 9, "category": "Road access", "question": "What does a red circle with a car and motorcycle inside mean?", "options": ["Cars and motorcycles only", "No motor vehicles", "No overtaking", "Motorway ahead"], "answer": 1, "explanation": "A car and motorcycle inside a red circle means no motor vehicles."}, {"id": 10, "category": "Road access", "question": "What does a red circle with a horizontal white bar mean?", "options": ["No waiting", "No entry", "Keep left", "No through road"], "answer": 1, "explanation": "The red circle with a white horizontal bar means no entry."}, {"id": 11, "category": "Road access", "question": "What does a blue rectangular sign with a dead-end symbol mean?", "options": ["No through road", "No stopping", "One-way street", "Diversion route"], "answer": 0, "explanation": "A dead-end or no through road sign shows the road does not lead through."}, {"id": 12, "category": "Parking", "question": "What do double yellow lines at the edge of the road usually mean?", "options": ["No waiting at any time", "No parking only at night", "Loading only", "Bus lane"], "answer": 0, "explanation": "Double yellow lines usually mean no waiting at any time."}, {"id": 13, "category": "Parking", "question": "What do single yellow lines usually mean?", "options": ["No waiting at certain times", "No waiting at any time", "Bus parking only", "No stopping ever"], "answer": 0, "explanation": "Single yellow lines usually mean waiting restrictions apply at certain times shown on nearby signs."}, {"id": 14, "category": "Red routes", "question": "What do double red lines usually mean?", "options": ["No stopping at any time", "No waiting on Sundays only", "Bus lane ahead", "Motorway begins"], "answer": 0, "explanation": "Double red lines mean no stopping at any time on that red route."}, {"id": 15, "category": "Red routes", "question": "What do single red lines usually mean?", "options": ["No stopping at certain times", "No parking only at night", "Minimum speed applies", "Emergency parking only"], "answer": 0, "explanation": "Single red lines mean no stopping during the times shown on nearby signs."}, {"id": 16, "category": "Bus lanes", "question": "How are bus lanes often shown?", "options": ["By red triangles", "By road markings and blue information signs", "Only by traffic lights", "Only by yellow boxes"], "answer": 1, "explanation": "Bus lanes are usually marked on the road and by blue information signs showing times and permitted vehicles."}, {"id": 17, "category": "Lanes", "question": "What does a blue sign with a white arrow pointing left or right usually mean?", "options": ["No vehicles", "Mandatory direction", "Warning of a bend", "Parking area"], "answer": 1, "explanation": "A white arrow on a blue circle usually means you must follow that direction."}, {"id": 18, "category": "Road layout", "question": "What does a sign with two arrows pointing in opposite directions on a white background usually indicate?", "options": ["Two-way traffic", "No U-turn", "Roundabout ahead", "Keep left"], "answer": 0, "explanation": "It indicates two-way traffic or a return to two-way traffic."}, {"id": 19, "category": "Road layout", "question": "What does a sign showing lanes merging into one mean?", "options": ["Road closed ahead", "Traffic merging ahead", "No overtaking", "One-way street"], "answer": 1, "explanation": "A merge sign warns that lanes are reducing and traffic will need to merge."}, {"id": 20, "category": "Junctions", "question": "What does a sign with circular arrows mean?", "options": ["No U-turn", "Roundabout ahead", "Ring road", "Mini-roundabout only"], "answer": 1, "explanation": "Circular arrows show a roundabout ahead."}, {"id": 21, "category": "Crossings", "question": "What does a sign showing a person on black and white stripes usually warn of?", "options": ["Pelican crossing", "Zebra crossing ahead", "School patrol", "Footpath ends"], "answer": 1, "explanation": "That warning sign usually means a zebra crossing is ahead."}, {"id": 22, "category": "Crossings", "question": "What does a sign showing children near a crossing point usually mean?", "options": ["Children likely to be crossing or nearby", "Playground inside the road", "School buses only", "Pedestrian zone ends"], "answer": 0, "explanation": "It warns that children may be ahead, often near a school or crossing."}, {"id": 23, "category": "Warning signs", "question": "What does a triangular sign showing a bend mean?", "options": ["Roadworks only", "Sharp bend or series of bends ahead", "Roundabout ahead", "U-turn permitted"], "answer": 1, "explanation": "A bend symbol in a red triangle warns of a bend or bends ahead."}, {"id": 24, "category": "Warning signs", "question": "What does a triangular sign with a slippery road symbol mean?", "options": ["Road may be slippery", "Ice cream van ahead", "Use snow chains now", "Flood barrier"], "answer": 0, "explanation": "It warns that the road may be slippery, often in wet or icy conditions."}, {"id": 25, "category": "Warning signs", "question": "What does a triangular sign with a hill descending mean?", "options": ["Steep hill down", "Tunnel ahead", "Bridge opening", "Loose chippings"], "answer": 0, "explanation": "It warns of a steep downhill gradient ahead."}, {"id": 26, "category": "Warning signs", "question": "What does a triangular sign with a hill rising mean?", "options": ["Slip road ahead", "Steep hill up", "Humps in road", "No heavy vehicles"], "answer": 1, "explanation": "It warns of a steep uphill gradient."}, {"id": 27, "category": "Warning signs", "question": "What does a triangular sign with a traffic light symbol mean?", "options": ["Traffic lights ahead", "Street lights end", "Signals out of order", "Only turn on lights at night"], "answer": 0, "explanation": "It warns that traffic lights are ahead."}, {"id": 28, "category": "Warning signs", "question": "What does a triangular sign with roadworks symbol mean?", "options": ["Road closed permanently", "Roadworks ahead", "Use hard shoulder", "One-way traffic"], "answer": 1, "explanation": "It warns that roadworks are ahead."}, {"id": 29, "category": "Warning signs", "question": "What does a triangular sign with a cyclist symbol mean?", "options": ["Cycle route ends", "Cycles prohibited", "Cyclists may be ahead", "Cycle parking only"], "answer": 2, "explanation": "It warns that cyclists may be on or crossing the road ahead."}, {"id": 30, "category": "Warning signs", "question": "What does a triangular sign with a deer or animal symbol mean?", "options": ["Zoo nearby", "Wild animals may be on the road", "Pets allowed in cars only", "Horse riders prohibited"], "answer": 1, "explanation": "It warns of animals likely to be on or near the road."}, {"id": 31, "category": "Railway crossings", "question": "What does a sign with barriers and a train symbol usually mean?", "options": ["Station car park", "Level crossing ahead", "Trams only", "Bridge closed"], "answer": 1, "explanation": "It warns of a level crossing ahead."}, {"id": 32, "category": "Railway crossings", "question": "What does a rectangular sign saying 'Stop when lights show' at a crossing mean?", "options": ["Slow down if you want", "Stop only for buses", "Stop if warning lights flash", "Stop only in fog"], "answer": 2, "explanation": "At a level crossing, flashing lights mean you must stop and wait."}, {"id": 33, "category": "Motorways", "question": "What colour are motorway direction signs in the UK?", "options": ["Green", "Blue", "Brown", "White"], "answer": 1, "explanation": "Motorway directional signs are generally blue."}, {"id": 34, "category": "Primary routes", "question": "What colour are primary route direction signs in the UK?", "options": ["Green", "Blue", "Brown", "Red"], "answer": 0, "explanation": "Primary route direction signs are usually green."}, {"id": 35, "category": "Tourist signs", "question": "What colour are tourist attraction signs in the UK?", "options": ["Brown", "Blue", "Yellow", "Black"], "answer": 0, "explanation": "Tourist signs are usually brown."}, {"id": 36, "category": "Road markings", "question": "What does a solid white line along the centre of the road generally mean?", "options": ["You may overtake freely", "Traffic is one-way only", "You should not cross or straddle it unless an exception applies", "Parking allowed"], "answer": 2, "explanation": "A solid white centre line means you must not cross or straddle it except in limited permitted situations."}, {"id": 37, "category": "Road markings", "question": "What do zigzag lines near a crossing usually mean?", "options": ["Overtaking encouraged", "No stopping or parking in that area", "Motorcycles only", "Cycle lane begins"], "answer": 1, "explanation": "Zigzag lines mark the controlled area of a crossing where stopping or parking is prohibited."}, {"id": 38, "category": "Road markings", "question": "What do chevrons painted on the road often indicate?", "options": ["A space to keep clear or a hazard separation area", "A parking area", "A bus stop only", "A cycle-only junction"], "answer": 0, "explanation": "Chevrons often separate traffic or mark areas that should be kept clear."}, {"id": 39, "category": "Road markings", "question": "What is the purpose of cat’s eyes or reflective studs?", "options": ["To reduce fuel use", "To help drivers see the road layout at night or in poor visibility", "To mark parking bays", "To warn only cyclists"], "answer": 1, "explanation": "Reflective studs help drivers follow lanes and road edges in poor visibility."}, {"id": 40, "category": "Lanes", "question": "What does a lane marked with a cycle symbol indicate?", "options": ["Cycles may use that lane, and other traffic rules depend on the line markings and signs", "Cars must park there", "Buses only", "Pedestrians only"], "answer": 0, "explanation": "A cycle symbol marks a cycle lane or cycle facility, and the exact rules depend on the accompanying line and sign type."}];
+    const LETTERS = ['A','B','C','D'];
+    const state = { active: QUESTIONS, current: 0, score: 0, answered: false, wrong: [] };
+    const els = {
+      emptyState: document.getElementById('emptyState'),
+      quizState: document.getElementById('quizState'),
+      resultsState: document.getElementById('resultsState'),
+      startRow: document.getElementById('startRow'),
+      metaPill: document.getElementById('metaPill'),
+      bar: document.getElementById('bar'),
+      questionText: document.getElementById('questionText'),
+      options: document.getElementById('options'),
+      feedback: document.getElementById('feedback'),
+      nextBtn: document.getElementById('nextBtn'),
+      startBtn: document.getElementById('startBtn'),
+      restartBtn: document.getElementById('restartBtn')
+    };
+    function shuffle(array) { const copy = [...array]; for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; } return copy; }
+    function startTest() { state.active = shuffle(QUESTIONS); state.current = 0; state.score = 0; state.answered = false; state.wrong = []; els.emptyState.classList.add('hide'); els.resultsState.classList.remove('show'); els.resultsState.innerHTML = ''; els.startRow.classList.add('hide'); els.quizState.classList.remove('hide'); renderQuestion(); }
+    function renderQuestion() { const q = state.active[state.current]; state.answered = false; els.nextBtn.disabled = true; els.feedback.className = 'feedback'; els.feedback.innerHTML = ''; els.metaPill.textContent = `Question ${state.current + 1} of ${state.active.length} • ${q.category}`; els.bar.style.width = `${(state.current / state.active.length) * 100}%`; els.questionText.textContent = q.question; els.options.innerHTML = ''; q.options.forEach((text, index) => { const btn = document.createElement('button'); btn.className = 'option'; btn.innerHTML = `<span class="letter">${LETTERS[index]}</span><span>${text}</span>`; btn.addEventListener('click', () => answer(index)); els.options.appendChild(btn); }); }
+    function answer(choice) { if (state.answered) return; state.answered = true; const q = state.active[state.current]; const optionButtons = [...els.options.querySelectorAll('.option')]; optionButtons.forEach((btn, index) => { btn.disabled = true; if (index === q.answer) btn.classList.add('correct'); if (index === choice && choice !== q.answer) btn.classList.add('wrong'); }); const correct = choice === q.answer; if (correct) state.score += 1; else state.wrong.push({ ...q, selected: choice }); els.feedback.className = `feedback show ${correct ? 'ok' : 'no'}`; els.feedback.innerHTML = `<strong>${correct ? 'Correct.' : `Not quite. Correct answer: ${LETTERS[q.answer]}.`}</strong><div>${q.explanation}</div>`; els.nextBtn.disabled = false; els.bar.style.width = `${((state.current + 1) / state.active.length) * 100}%`; }
+    function nextQuestion() { if (state.current >= state.active.length - 1) { showResults(); return; } state.current += 1; renderQuestion(); }
+    function showResults() { els.quizState.classList.add('hide'); els.resultsState.classList.add('show'); const total = state.active.length; const score = state.score; const pct = Math.round((score / total) * 100); const wrongHtml = state.wrong.length ? state.wrong.map(item => `<div class="review-item"><h4>Q${item.id}. ${item.question}</h4><p><strong>Your answer:</strong> ${LETTERS[item.selected]} • ${item.options[item.selected]}</p><p><strong>Correct answer:</strong> ${LETTERS[item.answer]} • ${item.options[item.answer]}</p><p><strong>Why:</strong> ${item.explanation}</p></div>`).join('') : '<div class="review-item"><h4>Perfect run.</h4><p>No misses at all. Nicely done.</p></div>'; els.resultsState.innerHTML = `<div><div class="pill">Finished • 40 questions</div><div class="question" style="margin-bottom:10px;">Score: ${score}/40 (${pct}%)</div><p class="muted">Strong next step after this, do a general theory practice run and then hazard perception separately.</p><div class="btn-row" style="margin-top:18px;"><button class="primary" id="againBtn">Run again</button></div>${wrongHtml}</div>`; document.getElementById('againBtn').addEventListener('click', startTest); }
+    els.startBtn.addEventListener('click', startTest); els.restartBtn.addEventListener('click', startTest); els.nextBtn.addEventListener('click', nextQuestion);
+  </script>
+</body>
+</html>

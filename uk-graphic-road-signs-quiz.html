@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UK Graphic Road Signs Quiz</title>
+  <style>
+    :root {
+      --bg: #0b1020; --panel: #131a2f; --panel-2: #1a2442; --text: #eef2ff; --muted: #a8b3cf; --good: #35c36b; --bad: #ff6b6b; --warn: #ffcc66; --border: rgba(255,255,255,0.08); --shadow: 0 20px 50px rgba(0,0,0,0.35);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: radial-gradient(circle at top, #162247 0%, var(--bg) 55%); color: var(--text); min-height: 100vh; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 20px 48px; }
+    .hero, .card { background: rgba(19,26,47,0.92); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow); }
+    .hero { padding: 28px; margin-bottom: 20px; }
+    .eyebrow { display: inline-flex; gap: 8px; align-items: center; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--warn); background: rgba(255,204,102,.1); padding: 8px 10px; border-radius: 999px; border: 1px solid rgba(255,204,102,.18); }
+    h1 { margin: 14px 0 10px; font-size: clamp(28px, 4vw, 42px); line-height: 1.08; }
+    .sub { margin: 0; color: var(--muted); line-height: 1.6; max-width: 75ch; }
+    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-top: 18px; }
+    .stat { background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+    .stat .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+    .stat .v { margin-top: 8px; font-size: 24px; font-weight: 800; }
+    .card { padding: 22px; }
+    .empty { min-height: 260px; display: flex; align-items: center; justify-content: center; color: var(--muted); text-align: center; padding: 24px; border: 1px dashed var(--border); border-radius: 18px; background: rgba(255,255,255,.02); }
+    .hide { display: none !important; }
+    .pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 999px; background: rgba(124,156,255,.12); color: #c9d5ff; border: 1px solid rgba(124,156,255,.18); font-size: 13px; margin-bottom: 16px; }
+    .progress { height: 10px; background: rgba(255,255,255,.08); border-radius: 999px; overflow: hidden; margin: 18px 0 22px; }
+    .progress > div { height: 100%; width: 0%; background: linear-gradient(135deg, #7c9cff, #35c36b); transition: width .25s ease; }
+    .sign-wrap { display: flex; justify-content: center; margin: 6px 0 18px; }
+    .sign-wrap img { max-width: 220px; max-height: 220px; background: white; border-radius: 16px; padding: 10px; border: 1px solid rgba(255,255,255,.1); }
+    .question { font-size: 24px; line-height: 1.45; margin-bottom: 18px; text-align: center; }
+    .options { display: grid; gap: 12px; }
+    .option { text-align: left; width: 100%; background: rgba(255,255,255,.03); color: var(--text); border: 1px solid var(--border); padding: 14px 16px; border-radius: 14px; display: flex; gap: 14px; align-items: flex-start; cursor: pointer; }
+    .option .letter { min-width: 30px; width: 30px; height: 30px; border-radius: 999px; background: rgba(255,255,255,.08); display: inline-flex; align-items: center; justify-content: center; font-weight: 800; margin-top: 2px; }
+    .option.correct { border-color: rgba(53,195,107,.6); background: rgba(53,195,107,.12); }
+    .option.wrong { border-color: rgba(255,107,107,.55); background: rgba(255,107,107,.12); }
+    .feedback { margin-top: 18px; padding: 16px; border-radius: 14px; border: 1px solid var(--border); background: rgba(255,255,255,.03); display: none; }
+    .feedback.show { display: block; }
+    .feedback strong { display: block; margin-bottom: 8px; }
+    .feedback.ok strong { color: var(--good); }
+    .feedback.no strong { color: var(--bad); }
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    button { border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; font: inherit; }
+    button:disabled { cursor: not-allowed; opacity: .55; }
+    .primary { background: linear-gradient(135deg, #7c9cff, #8f78ff); color: white; font-weight: 700; }
+    .secondary { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
+    .results { display: none; gap: 18px; margin-top: 8px; }
+    .results.show { display: grid; }
+    .review-item { padding: 16px; border: 1px solid var(--border); border-radius: 16px; background: rgba(255,255,255,.03); margin-top: 14px; }
+    .review-item h4 { margin: 0 0 8px; font-size: 16px; }
+    .review-item p { color: var(--muted); margin: 8px 0 0; line-height: 1.55; }
+    .muted { color: var(--muted); font-size: 14px; line-height: 1.6; }
+    @media (max-width: 720px) { .stats { grid-template-columns: 1fr; } .question { font-size: 21px; } .sign-wrap img { max-width: 180px; max-height: 180px; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">UK sign recognition • graphic quiz • official sign images</div>
+      <h1>UK graphic road signs quiz</h1>
+      <p class="sub">This version uses actual official GOV.UK sign images, so it feels much more like real sign recognition. One sign at a time, then score and review at the end.</p>
+      <div class="stats">
+        <div class="stat"><div class="k">Questions</div><div class="v">26</div></div>
+        <div class="stat"><div class="k">Style</div><div class="v">Image based</div></div>
+        <div class="stat"><div class="k">Mode</div><div class="v">One at a time</div></div>
+      </div>
+    </section>
+    <section class="card">
+      <div id="emptyState" class="empty">Press start and the quiz will show one road sign graphic at a time.</div>
+      <div id="quizState" class="hide">
+        <div class="pill" id="metaPill">Question 1 of 26</div>
+        <div class="progress"><div id="bar"></div></div>
+        <div class="sign-wrap"><img id="signImage" alt="Road sign" loading="lazy" referrerpolicy="no-referrer" /></div>
+        <div class="question" id="questionText"></div>
+        <div class="options" id="options"></div>
+        <div class="feedback" id="feedback"></div>
+        <div class="btn-row">
+          <button class="secondary" id="replayVoiceBtn">Replay voice</button>
+          <button class="primary" id="nextBtn" disabled>Next question</button>
+          <button class="secondary" id="restartBtn">Restart quiz</button>
+        </div>
+      </div>
+      <div id="resultsState" class="results"></div>
+      <div class="btn-row" id="startRow"><button class="primary" id="startBtn">Start graphic quiz</button></div>
+    </section>
+  </div>
+  <script>
+    const QUESTIONS = [{"id": 1, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b9f330e5274a151e000022/sign-giving-order-stop-give-way.jpg", "question": "What does this sign mean?", "options": ["No entry", "Stop", "No waiting", "School patrol"], "answer": 1, "explanation": "This is the stop sign. You must stop at the stop line and make sure the way is clear before proceeding."}, {"id": 2, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b9f373ed915d155f00001e/sign-giving-order-give-way.jpg", "question": "What does this sign mean?", "options": ["Give way", "No overtaking", "Priority over oncoming traffic", "Road narrows ahead"], "answer": 0, "explanation": "This is the give way sign. Traffic on the major road has priority."}, {"id": 3, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b9f41b40f0b6151f000019/sign-giving-order-no-entry-vehicular-traffic.jpg", "question": "What does this sign mean?", "options": ["No motor vehicles", "No waiting", "No entry", "Keep left"], "answer": 2, "explanation": "This is the no entry sign."}, {"id": 4, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b9f4d840f0b6151f00001b/sign-giving-order-no-motor-vehicles.jpg", "question": "What does this sign mean?", "options": ["No motor vehicles", "No overtaking", "Cars only", "Pedestrian zone"], "answer": 0, "explanation": "A car and motorcycle in a red circle means no motor vehicles."}, {"id": 5, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b9f50240f0b6151c000021/sign-giving-order-no-overtaking.jpg", "question": "What does this sign mean?", "options": ["No motor vehicles", "No overtaking", "No right turn", "End of dual carriageway"], "answer": 1, "explanation": "The car and motorcycle in a red circle mean no overtaking."}, {"id": 6, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b9f66fe5274a151e000028/sign-giving-order-no-right-turn.jpg", "question": "What does this sign mean?", "options": ["No left turn", "Turn right ahead", "No right turn", "Roundabout ahead"], "answer": 2, "explanation": "This sign means no right turn."}, {"id": 7, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b9f68740f0b6151f000021/sign-giving-order-no-left-turn.jpg", "question": "What does this sign mean?", "options": ["No left turn", "Turn left ahead", "No U-turn", "Keep left"], "answer": 0, "explanation": "This sign means no left turn."}, {"id": 8, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b9f6aded915d155f000024/sign-giving-order-no-u-turn.jpg", "question": "What does this sign mean?", "options": ["No entry", "No overtaking", "No U-turn", "Dangerous bend"], "answer": 2, "explanation": "This sign means no U-turns."}, {"id": 9, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b9f2dd40f0b6151f000015/sign-giving-order-maximum-speed.jpg", "question": "What does this sign indicate?", "options": ["Recommended speed", "Maximum speed limit", "Minimum speed limit", "Average speed camera zone"], "answer": 1, "explanation": "A number in a red circle is a maximum speed limit sign."}, {"id": 10, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b9f2f740f0b6151c00001d/sign-giving-order-national-speed-limit.jpg", "question": "What does this sign mean?", "options": ["Minimum speed applies", "End of motorway", "National speed limit applies", "No waiting"], "answer": 2, "explanation": "This sign means the national speed limit applies."}, {"id": 11, "image": "https://assets.digital.cabinet-office.gov.uk/media/55ba126540f0b6151c00002b/sign-giving-order-mini-roundabout.jpg", "question": "What does this sign mean?", "options": ["Roundabout ahead", "Mini-roundabout", "No U-turn", "Traffic circle for buses only"], "answer": 1, "explanation": "This blue circular sign indicates a mini-roundabout."}, {"id": 12, "image": "https://assets.digital.cabinet-office.gov.uk/media/55ba1284e5274a1521000023/sign-giving-order-route-pedal-cycles-only.jpg", "question": "What does this sign mean?", "options": ["Cycle route ahead", "Cycles only", "No cycling", "Shared cycle and pedestrian route"], "answer": 1, "explanation": "A blue circular cycle sign usually means route for pedal cycles only."}, {"id": 13, "image": "https://assets.digital.cabinet-office.gov.uk/media/55ba12b1ed915d155c00001d/sign-giving-order-segregated-cycle-pedestrian-route.jpg", "question": "What does this sign mean?", "options": ["Pedestrians only", "Cycles only", "Segregated cycle and pedestrian route", "No pedestrians"], "answer": 2, "explanation": "This sign indicates a segregated route for cyclists and pedestrians."}, {"id": 14, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b7696640f0b6790f000011/warning-sign-crossroads.jpg", "question": "What does this warning sign show?", "options": ["Crossroads ahead", "No through road", "Staggered junction", "T-junction only"], "answer": 0, "explanation": "This warning sign shows that a crossroads is ahead."}, {"id": 15, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b769b2ed915d07e200000b/warning-sign-t-junction-with-priority.jpg", "question": "What does this warning sign mean?", "options": ["Crossroads ahead", "Road closed", "T-junction with priority over traffic from the right", "No right turn"], "answer": 2, "explanation": "This sign warns of a T-junction where the main route has priority."}, {"id": 16, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b76a5d40f0b67aa300000f/warning-sign-bend-to-right.jpg", "question": "What does this warning sign mean?", "options": ["Right-hand bend ahead", "Roundabout ahead", "Two-way traffic", "Dangerous hill"], "answer": 0, "explanation": "This sign warns of a bend to the right ahead."}, {"id": 17, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b76a9240f0b6790f000017/warning-sign-uneven-road.jpg", "question": "What does this warning sign show?", "options": ["Soft verges", "Uneven road ahead", "Road humps ahead", "Slippery road"], "answer": 1, "explanation": "This warning sign means the road surface ahead is uneven."}, {"id": 18, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b76bd2e5274a21ec00000c/warning-sign-traffic-signals.jpg", "question": "What does this warning sign mean?", "options": ["Street lights ahead", "Traffic signals ahead", "Signals out of use", "Level crossing ahead"], "answer": 1, "explanation": "This warning sign means traffic signals are ahead."}, {"id": 19, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b76bec40f0b6790f000019/warning-sign-slippery-road.jpg", "question": "What does this warning sign show?", "options": ["Roadworks ahead", "Loose chippings", "Slippery road", "Flood risk"], "answer": 2, "explanation": "This warning sign means the road may be slippery."}, {"id": 20, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b76c11ed915d07fe000013/warning-sign-steep-hill-downwards.jpg", "question": "What does this warning sign mean?", "options": ["Steep hill downwards", "Tunnel ahead", "Bridge ahead", "Sharp bend ahead"], "answer": 0, "explanation": "This sign warns of a steep downhill gradient."}, {"id": 21, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b76da940f0b67aa3000019/warning-sign-school-crossing-patrol-ahead.jpg", "question": "What does this warning sign show?", "options": ["School patrol ahead", "Children playing in the road", "Pedestrian zone", "No pedestrians"], "answer": 0, "explanation": "This sign warns that a school crossing patrol may be ahead."}, {"id": 22, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b76e1040f0b6790f00001d/warning-sign-zebra-crossing.jpg", "question": "What does this warning sign mean?", "options": ["Pedestrian zone ahead", "Zebra crossing ahead", "Pelican crossing only", "No stopping zone"], "answer": 1, "explanation": "This warning sign means a zebra crossing is ahead."}, {"id": 23, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b76fbced915d07e200000f/warning-sign-cycle-route-ahead.jpg", "question": "What does this warning sign show?", "options": ["Cycles prohibited", "Cycle route ahead", "Cyclists must dismount", "Cycle parking area"], "answer": 1, "explanation": "This warning sign means a cycle route or cyclists may be ahead."}, {"id": 24, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b76f56e5274a21ec000018/warning-sign-cattle.jpg", "question": "What does this warning sign mean?", "options": ["Farm entrance only", "Cattle grid ahead", "Cattle likely to be in the road", "Animals not allowed"], "answer": 2, "explanation": "This warning sign means cattle may be on or near the road."}, {"id": 25, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b76f70e5274a21ec00001a/warning-sign-wild-animals.jpg", "question": "What does this warning sign mean?", "options": ["Wild animals may be on the road", "Zoo ahead", "Pets allowed", "Hunting area"], "answer": 0, "explanation": "This warning sign means wild animals may be on or near the road."}, {"id": 26, "image": "https://assets.digital.cabinet-office.gov.uk/media/55b76ffa40f0b6790f000021/warning-sign-traffic-queues.jpg", "question": "What does this warning sign show?", "options": ["Slow vehicles only", "Traffic queues likely ahead", "One-way traffic", "Stop sign ahead"], "answer": 1, "explanation": "This sign warns that traffic queues are likely ahead."}];
+    const LETTERS = ['A','B','C','D'];
+    const state = { active: QUESTIONS, current: 0, score: 0, answered: false, wrong: [] };
+    const els = { emptyState: document.getElementById('emptyState'), quizState: document.getElementById('quizState'), resultsState: document.getElementById('resultsState'), startRow: document.getElementById('startRow'), metaPill: document.getElementById('metaPill'), bar: document.getElementById('bar'), signImage: document.getElementById('signImage'), questionText: document.getElementById('questionText'), options: document.getElementById('options'), feedback: document.getElementById('feedback'), nextBtn: document.getElementById('nextBtn'), startBtn: document.getElementById('startBtn'), restartBtn: document.getElementById('restartBtn'), replayVoiceBtn: document.getElementById('replayVoiceBtn') };
+    let selectedVoice = null;
+    function shuffle(array) { const copy=[...array]; for (let i=copy.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [copy[i],copy[j]]=[copy[j],copy[i]]; } return copy; }
+    function pickVoice() {
+      if (!('speechSynthesis' in window)) return null;
+      const voices = window.speechSynthesis.getVoices();
+      return voices.find(v => v.lang && v.lang.toLowerCase().startsWith('en-gb')) || voices.find(v => v.lang && v.lang.toLowerCase().startsWith('en')) || null;
+    }
+    function stopSpeech() {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+    function speak(text) {
+      if (!('speechSynthesis' in window)) return;
+      stopSpeech();
+      selectedVoice = selectedVoice || pickVoice();
+      const utterance = new SpeechSynthesisUtterance(text);
+      if (selectedVoice) utterance.voice = selectedVoice;
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      setTimeout(() => window.speechSynthesis.speak(utterance), 120);
+    }
+    function questionSpeech(q) {
+      return `${q.question} Option A. ${q.options[0]}. Option B. ${q.options[1]}. Option C. ${q.options[2]}. Option D. ${q.options[3]}.`;
+    }
+    function answerSpeech(q, correct) {
+      return correct
+        ? `Correct. ${q.explanation}`
+        : `Incorrect. The correct answer is ${LETTERS[q.answer]}. ${q.options[q.answer]}. ${q.explanation}`;
+    }
+    function startTest() { state.active=shuffle(QUESTIONS); state.current=0; state.score=0; state.answered=false; state.wrong=[]; stopSpeech(); els.emptyState.classList.add('hide'); els.resultsState.classList.remove('show'); els.resultsState.innerHTML=''; els.startRow.classList.add('hide'); els.quizState.classList.remove('hide'); renderQuestion(); }
+    function renderQuestion() { const q=state.active[state.current]; state.answered=false; els.nextBtn.disabled=true; els.feedback.className='feedback'; els.feedback.innerHTML=''; els.metaPill.textContent=`Question ${state.current+1} of ${state.active.length}`; els.bar.style.width=`${(state.current/state.active.length)*100}%`; els.signImage.src=q.image; els.questionText.textContent=q.question; els.options.innerHTML=''; q.options.forEach((text,index)=>{ const btn=document.createElement('button'); btn.className='option'; btn.innerHTML=`<span class="letter">${LETTERS[index]}</span><span>${text}</span>`; btn.addEventListener('click',()=>answer(index)); els.options.appendChild(btn); }); speak(questionSpeech(q)); }
+    function answer(choice) { if (state.answered) return; state.answered=true; const q=state.active[state.current]; const optionButtons=[...els.options.querySelectorAll('.option')]; optionButtons.forEach((btn,index)=>{ btn.disabled=true; if (index===q.answer) btn.classList.add('correct'); if (index===choice && choice!==q.answer) btn.classList.add('wrong'); }); const correct=choice===q.answer; if (correct) state.score+=1; else state.wrong.push({...q, selected: choice}); els.feedback.className=`feedback show ${correct ? 'ok' : 'no'}`; els.feedback.innerHTML=`<strong>${correct ? 'Correct.' : `Not quite. Correct answer: ${LETTERS[q.answer]}.`}</strong><div>${q.explanation}</div>`; els.nextBtn.disabled=false; els.bar.style.width=`${((state.current+1)/state.active.length)*100}%`; speak(answerSpeech(q, correct)); }
+    function nextQuestion() { if (state.current>=state.active.length-1) { showResults(); return; } state.current+=1; renderQuestion(); }
+    function showResults() { stopSpeech(); els.quizState.classList.add('hide'); els.resultsState.classList.add('show'); const total=state.active.length; const score=state.score; const pct=Math.round((score/total)*100); const wrongHtml=state.wrong.length ? state.wrong.map(item=>`<div class="review-item"><h4>Q${item.id}</h4><p><strong>Correct answer:</strong> ${LETTERS[item.answer]} • ${item.options[item.answer]}</p><p><strong>Why:</strong> ${item.explanation}</p></div>`).join('') : '<div class="review-item"><h4>Perfect run.</h4><p>No misses at all. Nicely done.</p></div>'; els.resultsState.innerHTML=`<div><div class="pill">Finished • 26 questions</div><div class="question" style="margin-bottom:10px;">Score: ${score}/26 (${pct}%)</div><p class="muted">This is much closer to real sign recognition. If you want, I can make Part 2 with another fresh image set.</p><div class="btn-row" style="margin-top:18px;"><button class="primary" id="againBtn">Run again</button></div>${wrongHtml}</div>`; document.getElementById('againBtn').addEventListener('click', startTest); }
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => { selectedVoice = pickVoice(); };
+      selectedVoice = pickVoice();
+    }
+    els.startBtn.addEventListener('click', startTest); els.restartBtn.addEventListener('click', startTest); els.nextBtn.addEventListener('click', nextQuestion); els.replayVoiceBtn.addEventListener('click', () => { const q = state.active[state.current]; if (q) speak(questionSpeech(q)); });
+    window.addEventListener('beforeunload', stopSpeech);
+  </script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UK Car Theory Practice Test</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #131a2f;
+      --panel-2: #1a2442;
+      --text: #eef2ff;
+      --muted: #a8b3cf;
+      --accent: #7c9cff;
+      --good: #35c36b;
+      --bad: #ff6b6b;
+      --warn: #ffcc66;
+      --border: rgba(255,255,255,0.08);
+      --shadow: 0 20px 50px rgba(0,0,0,0.35);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: radial-gradient(circle at top, #162247 0%, var(--bg) 55%); color: var(--text); min-height: 100vh; }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 32px 20px 48px; }
+    .hero, .card { background: rgba(19, 26, 47, 0.92); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow); }
+    .hero { padding: 28px; margin-bottom: 20px; }
+    .eyebrow { display: inline-flex; gap: 8px; align-items: center; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--warn); background: rgba(255, 204, 102, 0.1); padding: 8px 10px; border-radius: 999px; border: 1px solid rgba(255, 204, 102, 0.18); }
+    h1 { margin: 14px 0 10px; font-size: clamp(28px, 4vw, 42px); line-height: 1.08; }
+    .sub { margin: 0; color: var(--muted); font-size: 16px; line-height: 1.6; max-width: 72ch; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 18px; }
+    .stat { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+    .stat .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .stat .v { margin-top: 8px; font-size: 24px; font-weight: 800; }
+    .card { padding: 22px; }
+    .empty { min-height: 260px; display: flex; align-items: center; justify-content: center; color: var(--muted); text-align: center; padding: 24px; border: 1px dashed var(--border); border-radius: 18px; background: rgba(255,255,255,0.02); }
+    .hide { display: none !important; }
+    .pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 999px; background: rgba(124,156,255,0.12); color: #c9d5ff; border: 1px solid rgba(124,156,255,0.18); font-size: 13px; margin-bottom: 16px; }
+    .progress { height: 10px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; margin: 18px 0 22px; }
+    .progress > div { height: 100%; width: 0%; background: linear-gradient(135deg, #7c9cff, #35c36b); transition: width 0.25s ease; }
+    .question { font-size: 24px; line-height: 1.45; margin-bottom: 18px; }
+    .options { display: grid; gap: 12px; }
+    .option { text-align: left; width: 100%; background: rgba(255,255,255,0.03); color: var(--text); border: 1px solid var(--border); padding: 14px 16px; border-radius: 14px; display: flex; gap: 14px; align-items: flex-start; cursor: pointer; }
+    .option .letter { min-width: 30px; width: 30px; height: 30px; border-radius: 999px; background: rgba(255,255,255,0.08); display: inline-flex; align-items: center; justify-content: center; font-weight: 800; margin-top: 2px; }
+    .option.correct { border-color: rgba(53,195,107,0.6); background: rgba(53,195,107,0.12); }
+    .option.wrong { border-color: rgba(255,107,107,0.55); background: rgba(255,107,107,0.12); }
+    .feedback { margin-top: 18px; padding: 16px; border-radius: 14px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); display: none; }
+    .feedback.show { display: block; }
+    .feedback strong { display: block; margin-bottom: 8px; }
+    .feedback.ok strong { color: var(--good); }
+    .feedback.no strong { color: var(--bad); }
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    button { border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; font: inherit; }
+    button:disabled { cursor: not-allowed; opacity: 0.55; }
+    .primary { background: linear-gradient(135deg, #7c9cff, #8f78ff); color: white; font-weight: 700; }
+    .secondary { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
+    .results { display: none; gap: 18px; margin-top: 8px; }
+    .results.show { display: grid; }
+    .review-item { padding: 16px; border: 1px solid var(--border); border-radius: 16px; background: rgba(255,255,255,0.03); margin-top: 14px; }
+    .review-item h4 { margin: 0 0 8px; font-size: 16px; }
+    .review-item p { color: var(--muted); margin: 8px 0 0; line-height: 1.55; }
+    .muted { color: var(--muted); font-size: 14px; line-height: 1.6; }
+    @media (max-width: 720px) { .stats { grid-template-columns: 1fr; } .question { font-size: 21px; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">UK car theory practice • unofficial • 50 questions</div>
+      <h1>UK car theory practice test</h1>
+      <p class="sub">A one-question-at-a-time practice test for car learners. This is unofficial practice material, not official DVSA wording. It focuses on the multiple-choice side of the theory test, not hazard perception.</p>
+      <div class="stats">
+        <div class="stat"><div class="k">Questions</div><div class="v">50</div></div>
+        <div class="stat"><div class="k">Practice pass line</div><div class="v">43/50</div></div>
+        <div class="stat"><div class="k">Mode</div><div class="v">One at a time</div></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div id="emptyState" class="empty">Press start and the test will present one question at a time, with a score and review at the end.</div>
+
+      <div id="quizState" class="hide">
+        <div class="pill" id="metaPill">Question 1 of 50</div>
+        <div class="progress"><div id="bar"></div></div>
+        <div class="question" id="questionText"></div>
+        <div class="options" id="options"></div>
+        <div class="feedback" id="feedback"></div>
+        <div class="btn-row">
+          <button class="primary" id="nextBtn" disabled>Next question</button>
+          <button class="secondary" id="restartBtn">Restart test</button>
+        </div>
+      </div>
+
+      <div id="resultsState" class="results"></div>
+
+      <div class="btn-row" id="startRow">
+        <button class="primary" id="startBtn">Start practice test</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const QUESTIONS = [{"id": 1, "category": "Speed limits", "question": "Unless signs show otherwise, what is the speed limit on a road with street lights in a built-up area?", "options": ["20 mph", "30 mph", "40 mph", "50 mph"], "answer": 1, "explanation": "In the UK, a road with street lights is usually a 30 mph limit unless signs show a different limit."}, {"id": 2, "category": "Stopping distances", "question": "What is the typical overall stopping distance at 30 mph in good conditions?", "options": ["12 metres", "23 metres", "36 metres", "53 metres"], "answer": 1, "explanation": "The Highway Code figure for 30 mph is 23 metres total stopping distance in good conditions."}, {"id": 3, "category": "Stopping distances", "question": "What is the typical overall stopping distance at 70 mph in good conditions?", "options": ["53 metres", "73 metres", "96 metres", "120 metres"], "answer": 2, "explanation": "The Highway Code figure for 70 mph is 96 metres total stopping distance in good conditions."}, {"id": 4, "category": "Crossings", "question": "At a zebra crossing, what should you do if someone has stepped onto the crossing?", "options": ["Sound your horn and continue", "Stop and give way", "Flash your headlights to hurry them", "Drive around them carefully"], "answer": 1, "explanation": "You must give way to pedestrians on a zebra crossing."}, {"id": 5, "category": "Traffic lights", "question": "What does a steady amber traffic light mean?", "options": ["Go if the road is clear", "Stop, unless you have already crossed the stop line or cannot stop safely", "Only buses must stop", "Speed up before it turns red"], "answer": 1, "explanation": "Amber means stop, unless you are already over the line or stopping would be unsafe."}, {"id": 6, "category": "Crossings", "question": "What is a toucan crossing used by?", "options": ["Only cyclists", "Only pedestrians", "Pedestrians and cyclists", "Horse riders only"], "answer": 2, "explanation": "Toucan crossings are shared crossings for pedestrians and cyclists."}, {"id": 7, "category": "Roundabouts", "question": "How should you drive at a mini-roundabout?", "options": ["Drive over the centre if it is clear", "Pass around the central marking", "Stop in the middle and check", "Always turn right around it"], "answer": 1, "explanation": "You should pass around the central marking on a mini-roundabout."}, {"id": 8, "category": "Junctions", "question": "When may you enter a box junction?", "options": ["Whenever the traffic ahead is moving slowly", "Only when your exit road is clear, unless you are turning right and waiting for oncoming traffic", "Any time after checking mirrors", "Only at night"], "answer": 1, "explanation": "Do not enter a box junction unless your exit is clear, except when turning right and waiting for oncoming traffic or other right-turners."}, {"id": 9, "category": "Signals", "question": "If an oncoming driver flashes their headlights, what should you assume?", "options": ["They are giving up priority to you", "They are warning you there is a speed camera", "They are letting you go first", "They are making you aware of their presence"], "answer": 3, "explanation": "A headlight flash should only be taken to mean, 'I am here.' It is not a guaranteed invitation to proceed."}, {"id": 10, "category": "Mirrors", "question": "When should you use the mirror-signal-manoeuvre routine?", "options": ["Only when overtaking", "Only before parking", "Before changing speed or direction", "Only on motorways"], "answer": 2, "explanation": "Use mirrors, signals, and good observation before changing speed, position, or direction."}, {"id": 11, "category": "Phones", "question": "What is the safest rule about using a handheld mobile phone while driving?", "options": ["Use it only in slow traffic", "Use it only with one hand", "Do not use it while driving", "Use it if you know the road well"], "answer": 2, "explanation": "Using a handheld phone while driving is dangerous and generally illegal. The safest rule is not to use it at all."}, {"id": 12, "category": "Alcohol", "question": "What is the best advice about alcohol before driving?", "options": ["One drink is always safe", "Strong coffee cancels alcohol", "Avoid alcohol completely before driving", "Only spirits are a problem"], "answer": 2, "explanation": "Alcohol affects judgement and reaction time. The safest advice is to avoid it completely before driving."}, {"id": 13, "category": "Seat belts", "question": "Why should you wear a seat belt even on a short trip?", "options": ["Only because it saves fuel", "Because most crashes happen on long journeys", "Because a collision can happen at any time", "Only because police may be nearby"], "answer": 2, "explanation": "Short trips are not risk-free. A crash can happen at any time, so seat belts should always be worn."}, {"id": 14, "category": "Children", "question": "Why are child restraints important?", "options": ["They make children sit quietly", "They are designed to protect children properly in a crash", "They are only needed on motorways", "They stop windows steaming up"], "answer": 1, "explanation": "Children need the right restraint for their size to reduce injury risk in a collision."}, {"id": 15, "category": "Tyres", "question": "What can under-inflated tyres cause?", "options": ["Better braking", "Improved fuel economy", "Poorer handling and increased fuel use", "Shorter stopping distances"], "answer": 2, "explanation": "Under-inflated tyres can reduce control, increase tyre wear, and raise fuel consumption."}, {"id": 16, "category": "Road conditions", "question": "After driving through deep water, what should you do when safe?", "options": ["Accelerate hard", "Test the brakes gently", "Switch off the engine", "Drive with hazard lights on"], "answer": 1, "explanation": "Water can reduce braking efficiency, so you should test the brakes gently once safe to do so."}, {"id": 17, "category": "Fog", "question": "When should you use fog lights?", "options": ["Whenever it is raining", "At night on any dark road", "Only in seriously reduced visibility, generally under 100 metres", "Whenever you are on a motorway"], "answer": 2, "explanation": "Fog lights should be used only in seriously reduced visibility and switched off when visibility improves."}, {"id": 18, "category": "Weather", "question": "In icy conditions, what is a good way to move off?", "options": ["Use high revs in first gear", "Use a higher gear and gentle acceleration", "Use the handbrake while accelerating hard", "Turn the steering fully left then move off"], "answer": 1, "explanation": "A higher gear and gentle acceleration help reduce wheelspin on ice or snow."}, {"id": 19, "category": "Signs", "question": "What do circular blue traffic signs usually mean?", "options": ["Warning", "Information only", "Mandatory instruction", "No vehicles allowed"], "answer": 2, "explanation": "Blue circular signs usually give a positive or mandatory instruction."}, {"id": 20, "category": "Signs", "question": "What do red triangular traffic signs usually mean?", "options": ["Warning", "Motorway information", "Route confirmation", "Parking allowed"], "answer": 0, "explanation": "Red triangular signs usually warn of hazards ahead."}, {"id": 21, "category": "Parking", "question": "What do double yellow lines normally mean?", "options": ["No waiting at any time", "No parking only at night", "No overtaking", "No entry"], "answer": 0, "explanation": "Double yellow lines usually mean no waiting at any time, though loading restrictions may also apply separately."}, {"id": 22, "category": "Parking", "question": "What do double red lines on a red route mean?", "options": ["No stopping at any time", "No waiting during the day only", "Buses only", "Loading allowed anytime"], "answer": 0, "explanation": "Double red lines indicate no stopping at any time on that red route."}, {"id": 23, "category": "Motorways", "question": "Which traffic is not normally allowed on a motorway?", "options": ["Cars", "Motorcycles", "Learner drivers in cars with an approved instructor and dual controls", "Pedestrians"], "answer": 3, "explanation": "Pedestrians are not allowed on motorways. Special rules also apply to certain vehicle types and learner drivers."}, {"id": 24, "category": "Motorways", "question": "If you miss your motorway exit, what should you do?", "options": ["Reverse carefully on the hard shoulder", "Make a U-turn at the next gap", "Continue to the next exit", "Stop and ask another driver"], "answer": 2, "explanation": "If you miss your exit, keep going to the next one. Never reverse or make a U-turn on a motorway."}, {"id": 25, "category": "Motorways", "question": "What should you do before changing lanes on a motorway?", "options": ["Signal and move immediately", "Check mirrors and blind spot, then move when safe", "Brake sharply first", "Sound your horn continuously"], "answer": 1, "explanation": "Before changing lanes, check mirrors, assess the blind spot, and move only when it is safe."}, {"id": 26, "category": "Breakdowns", "question": "If your vehicle breaks down on a motorway and you cannot reach an emergency area, what is one important step?", "options": ["Stand in front of the car", "Stay in the vehicle with seat belt off", "Get behind a barrier if it is safe to do so", "Walk in the carriageway to warn others"], "answer": 2, "explanation": "If safe, get yourself and passengers behind a barrier and away from traffic, then seek help."}, {"id": 27, "category": "Overtaking", "question": "Before overtaking, what should you be sure of?", "options": ["That the driver behind is also overtaking", "That the road is clear and it is safe to complete the manoeuvre", "That you are in a hurry", "That you are close to a junction"], "answer": 1, "explanation": "Only overtake when the road ahead is clear and you can complete the manoeuvre safely."}, {"id": 28, "category": "Cyclists", "question": "Why should you give cyclists plenty of room when overtaking?", "options": ["They always ride in a straight line", "They may need to avoid hazards such as potholes or drains", "They travel faster than cars", "They must move over for you"], "answer": 1, "explanation": "Cyclists may need to move out unexpectedly to avoid road defects or obstacles."}, {"id": 29, "category": "Pedestrians", "question": "Why should you take extra care near schools, parks, and residential areas?", "options": ["Roads are usually straighter there", "Children may act unpredictably", "You are allowed to use the horn more often", "There are no parking rules there"], "answer": 1, "explanation": "Children can be unpredictable, so extra caution is needed near places where they may be present."}, {"id": 30, "category": "Hazards", "question": "What is meant by a developing hazard?", "options": ["A hazard that has been repaired", "A situation that may cause you to change speed or direction", "A warning light on your dashboard only", "Any vehicle parked legally"], "answer": 1, "explanation": "A developing hazard is something ahead that may make you change speed, direction, or position."}, {"id": 31, "category": "Emergency vehicles", "question": "What should you do when an emergency vehicle approaches with blue lights and siren?", "options": ["Panic and brake sharply", "Drive through a red light immediately", "Take appropriate action to let it pass while following road signs and traffic laws", "Ignore it until it gets closer"], "answer": 2, "explanation": "Help emergency vehicles pass if you can do so safely and legally. Do not break traffic laws such as going through a red light unless directed by an officer."}, {"id": 32, "category": "Junctions", "question": "At a T-junction with a 'Give Way' line, what must you do?", "options": ["Always stop for 3 seconds", "Give priority to traffic on the major road", "Move out before checking", "Only give way to large vehicles"], "answer": 1, "explanation": "At a give-way line, traffic on the major road has priority."}, {"id": 33, "category": "Signs", "question": "What does a red octagonal sign mean?", "options": ["No entry", "Stop", "Warning", "School crossing"], "answer": 1, "explanation": "The red octagonal sign is the stop sign."}, {"id": 34, "category": "Railway crossings", "question": "What should you do if red lights flash at a level crossing?", "options": ["Cross quickly before the barrier lowers", "Stop and wait", "Only stop if a train is visible", "Sound your horn and continue"], "answer": 1, "explanation": "Red flashing lights at a level crossing mean stop and wait."}, {"id": 35, "category": "Road position", "question": "Why should you avoid driving too close behind another vehicle?", "options": ["It improves fuel economy", "It gives you less time to react", "It helps overtaking", "It is useful in rain"], "answer": 1, "explanation": "Following too closely reduces your reaction time and increases the risk of a collision."}, {"id": 36, "category": "Following distance", "question": "What is a simple way to check a safe following distance in dry conditions?", "options": ["The 1-second rule", "The 2-second rule", "The 4-metre rule", "The 10-car rule"], "answer": 1, "explanation": "The 2-second rule is a simple guide in dry conditions. In wet or icy conditions, leave more space."}, {"id": 37, "category": "Eco-safe driving", "question": "Which driving style is usually safest and most fuel-efficient?", "options": ["Late harsh braking and fast acceleration", "Smooth acceleration and early planning", "Keeping the engine at very high revs", "Using lower gears longer than necessary"], "answer": 1, "explanation": "Smooth driving and looking well ahead help reduce fuel use and improve safety."}, {"id": 38, "category": "Night driving", "question": "When should you dip your headlights at night?", "options": ["Only in towns", "When you might dazzle others", "Never on unlit roads", "Only when following motorcycles"], "answer": 1, "explanation": "Dip headlights whenever full beam could dazzle other road users."}, {"id": 39, "category": "Animals", "question": "What should you do if animals are being herded along the road?", "options": ["Drive close so they move faster", "Rev the engine to clear them", "Slow down and be prepared to stop", "Flash your lights constantly"], "answer": 2, "explanation": "Animals can behave unpredictably, so you should slow down and be ready to stop."}, {"id": 40, "category": "Attitude", "question": "What is one sign that you may be too tired to drive safely?", "options": ["You feel more confident", "You miss road signs or drift in lane", "You prefer cool air", "You lower your seat"], "answer": 1, "explanation": "Missing signs, yawning, or poor lane discipline can all be warning signs of tiredness."}, {"id": 41, "category": "Braking", "question": "Why is harsh braking on a bend risky?", "options": ["It helps the tyres grip better", "It can upset the balance of the vehicle", "It improves steering", "It reduces wear on brakes"], "answer": 1, "explanation": "Harsh braking on a bend can reduce stability and control."}, {"id": 42, "category": "Skids", "question": "If your car starts to skid, what is generally important?", "options": ["Brake as hard as possible immediately", "Steer wildly away from the skid", "Ease off and steer to regain control", "Accelerate hard"], "answer": 2, "explanation": "A skid is best dealt with calmly by easing off and steering appropriately to regain control."}, {"id": 43, "category": "Incidents", "question": "After a collision causing damage or injury, what must you do?", "options": ["Leave quickly if your car still moves", "Stop and exchange details, and report if required", "Only stop if someone waves at you", "Take a photo and drive off"], "answer": 1, "explanation": "You must stop after certain collisions and exchange details. Reporting rules may also apply."}, {"id": 44, "category": "Road users", "question": "Why should you take extra care around motorcyclists?", "options": ["They are always slower than cars", "They can be less visible and more affected by road conditions", "They must always stay in the left of the lane", "They never use mirrors"], "answer": 1, "explanation": "Motorcyclists can be harder to see and are more vulnerable to poor surfaces, wind, and driver errors."}, {"id": 45, "category": "Weather", "question": "How should you adjust your driving in heavy rain?", "options": ["Drive faster to clear standing water", "Leave a larger gap and reduce speed", "Use full beam headlights", "Brake later than normal"], "answer": 1, "explanation": "Heavy rain reduces visibility and grip, so you should slow down and increase following distance."}, {"id": 46, "category": "Slip roads", "question": "When joining a motorway from a slip road, what should you try to do?", "options": ["Stop at the end of the slip road", "Match your speed to the traffic already on the motorway and merge safely", "Join at 20 mph", "Move straight to the outside lane"], "answer": 1, "explanation": "Use the slip road to build speed and merge safely with motorway traffic."}, {"id": 47, "category": "Signs", "question": "A sign showing a red circle with a motorcycle above a car means what?", "options": ["Cars and motorcycles parked ahead", "No motor vehicles", "No overtaking", "Motorcycles only"], "answer": 2, "explanation": "A car and motorcycle in a red circle is the no overtaking sign."}, {"id": 48, "category": "Courtesy", "question": "Why is it important not to be pressured by other drivers?", "options": ["Because fast drivers are always wrong", "Because you should only drive at a speed and in a way that is safe and lawful", "Because you should ignore mirrors", "Because horns cancel priority"], "answer": 1, "explanation": "You should drive safely and legally, not be pushed into poor decisions by impatient drivers."}, {"id": 49, "category": "Hazard perception", "question": "Why should you scan well ahead while driving?", "options": ["To avoid using mirrors", "To spot hazards early and plan in good time", "To drive closer to the vehicle ahead", "To keep one hand off the wheel"], "answer": 1, "explanation": "Looking well ahead gives you more time to spot hazards and respond smoothly."}, {"id": 50, "category": "Test format", "question": "In the official UK car theory test, what else must be passed besides the multiple-choice section?", "options": ["A motorway drive", "A hazard perception test", "A mechanical repair test", "A parking exercise"], "answer": 1, "explanation": "The official UK car theory test includes both multiple-choice questions and a hazard perception section."}];
+    const LETTERS = ['A','B','C','D'];
+    const state = { active: QUESTIONS, current: 0, score: 0, answered: false, wrong: [] };
+    const els = {
+      emptyState: document.getElementById('emptyState'),
+      quizState: document.getElementById('quizState'),
+      resultsState: document.getElementById('resultsState'),
+      startRow: document.getElementById('startRow'),
+      metaPill: document.getElementById('metaPill'),
+      bar: document.getElementById('bar'),
+      questionText: document.getElementById('questionText'),
+      options: document.getElementById('options'),
+      feedback: document.getElementById('feedback'),
+      nextBtn: document.getElementById('nextBtn'),
+      startBtn: document.getElementById('startBtn'),
+      restartBtn: document.getElementById('restartBtn')
+    };
+
+    function shuffle(array) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function startTest() {
+      state.active = shuffle(QUESTIONS);
+      state.current = 0;
+      state.score = 0;
+      state.answered = false;
+      state.wrong = [];
+      els.emptyState.classList.add('hide');
+      els.resultsState.classList.remove('show');
+      els.resultsState.innerHTML = '';
+      els.startRow.classList.add('hide');
+      els.quizState.classList.remove('hide');
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const q = state.active[state.current];
+      state.answered = false;
+      els.nextBtn.disabled = true;
+      els.feedback.className = 'feedback';
+      els.feedback.innerHTML = '';
+      els.metaPill.textContent = `Question ${state.current + 1} of ${state.active.length} • ${q.category}`;
+      els.bar.style.width = `${(state.current / state.active.length) * 100}%`;
+      els.questionText.textContent = q.question;
+      els.options.innerHTML = '';
+      q.options.forEach((text, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option';
+        btn.innerHTML = `<span class="letter">${LETTERS[index]}</span><span>${text}</span>`;
+        btn.addEventListener('click', () => answer(index));
+        els.options.appendChild(btn);
+      });
+    }
+
+    function answer(choice) {
+      if (state.answered) return;
+      state.answered = true;
+      const q = state.active[state.current];
+      const optionButtons = [...els.options.querySelectorAll('.option')];
+      optionButtons.forEach((btn, index) => {
+        btn.disabled = true;
+        if (index === q.answer) btn.classList.add('correct');
+        if (index === choice && choice !== q.answer) btn.classList.add('wrong');
+      });
+      const correct = choice === q.answer;
+      if (correct) state.score += 1;
+      else state.wrong.push({ ...q, selected: choice });
+      els.feedback.className = `feedback show ${correct ? 'ok' : 'no'}`;
+      els.feedback.innerHTML = `
+        <strong>${correct ? 'Correct.' : `Not quite. Correct answer: ${LETTERS[q.answer]}.`}</strong>
+        <div>${q.explanation}</div>
+      `;
+      els.nextBtn.disabled = false;
+      els.bar.style.width = `${((state.current + 1) / state.active.length) * 100}%`;
+    }
+
+    function nextQuestion() {
+      if (state.current >= state.active.length - 1) {
+        showResults();
+        return;
+      }
+      state.current += 1;
+      renderQuestion();
+    }
+
+    function showResults() {
+      els.quizState.classList.add('hide');
+      els.resultsState.classList.add('show');
+      const total = state.active.length;
+      const score = state.score;
+      const pct = Math.round((score / total) * 100);
+      const passed = score >= 43;
+      const wrongHtml = state.wrong.length ? state.wrong.map(item => `
+        <div class="review-item">
+          <h4>Q${item.id}. ${item.question}</h4>
+          <p><strong>Your answer:</strong> ${LETTERS[item.selected]} • ${item.options[item.selected]}</p>
+          <p><strong>Correct answer:</strong> ${LETTERS[item.answer]} • ${item.options[item.answer]}</p>
+          <p><strong>Why:</strong> ${item.explanation}</p>
+        </div>
+      `).join('') : '<div class="review-item"><h4>Perfect run.</h4><p>No misses at all. Nicely done.</p></div>';
+      els.resultsState.innerHTML = `
+        <div>
+          <div class="pill">Finished • 50 questions</div>
+          <div class="question" style="margin-bottom:10px;">Score: ${score}/50 (${pct}%)</div>
+          <p class="muted"><strong style="color:${passed ? '#35c36b' : '#ff6b6b'}">${passed ? 'Practice pass line reached.' : 'Below the practice pass line.'}</strong> The official UK car theory test also includes hazard perception, which this practice test does not cover.</p>
+          <div class="btn-row" style="margin-top:18px;">
+            <button class="primary" id="againBtn">Run again</button>
+          </div>
+          ${wrongHtml}
+        </div>
+      `;
+      document.getElementById('againBtn').addEventListener('click', startTest);
+    }
+
+    els.startBtn.addEventListener('click', startTest);
+    els.restartBtn.addEventListener('click', startTest);
+    els.nextBtn.addEventListener('click', nextQuestion);
+  </script>
+</body>
+</html>
