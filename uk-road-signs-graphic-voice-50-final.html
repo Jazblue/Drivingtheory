@@ -1,0 +1,1280 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UK Road Sign Quiz, 50 Questions</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #101a2f;
+      --panel-2: #13203a;
+      --stage: #eef3f7;
+      --text: #edf4ff;
+      --muted: #9aabc5;
+      --line: rgba(255,255,255,0.1);
+      --accent: #6bd3ff;
+      --good: #37d48a;
+      --danger: #ff5d5d;
+      --warning: #f2c94c;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top, #183054 0%, #0f1b33 32%, var(--bg) 72%);
+      color: var(--text);
+    }
+    .app {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    h1 {
+      margin: 0 0 6px;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.05;
+    }
+    .sub {
+      color: var(--muted);
+      line-height: 1.45;
+      max-width: 860px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(107,211,255,0.24);
+      background: rgba(107,211,255,0.1);
+      color: #dff8ff;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(380px, 1.05fr) minmax(360px, 0.95fr);
+      gap: 18px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      background: rgba(16,26,47,0.88);
+      border-radius: 26px;
+      overflow: hidden;
+      box-shadow: 0 16px 50px rgba(0,0,0,0.34);
+      backdrop-filter: blur(10px);
+    }
+    .stage-card {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .stage-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .stage {
+      position: relative;
+      min-height: 640px;
+      border-radius: 22px;
+      border: 1px solid rgba(0,0,0,0.06);
+      background: linear-gradient(180deg, #f7fafc 0%, #ecf2f7 100%);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+    .stage::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border-radius: 18px;
+      border: 1px dashed rgba(0,0,0,0.08);
+      pointer-events: none;
+    }
+    .sign-wrap {
+      position: relative;
+      width: min(100%, 650px);
+      height: min(100%, 650px);
+      display: grid;
+      place-items: center;
+      padding: 26px;
+    }
+    .sign-wrap svg {
+      width: 100%;
+      height: auto;
+      max-height: 100%;
+      filter: drop-shadow(0 16px 24px rgba(0,0,0,0.18));
+    }
+    .sign-wrap img {
+      width: 100%;
+      height: auto;
+      max-width: 620px;
+      max-height: 620px;
+      object-fit: contain;
+      filter: drop-shadow(0 16px 24px rgba(0,0,0,0.18));
+    }
+    .tap-layer {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10,16,28,0.58);
+      z-index: 4;
+    }
+    .tap-layer.show {
+      display: flex;
+    }
+    .tap-box {
+      background: rgba(255,255,255,0.96);
+      color: #0b1220;
+      border-radius: 20px;
+      padding: 22px 24px;
+      max-width: 320px;
+      text-align: center;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+    }
+    .tap-box h3 {
+      margin: 0 0 8px;
+      font-size: 22px;
+    }
+    .tap-box p {
+      margin: 0 0 14px;
+      color: #425066;
+      line-height: 1.45;
+      font-size: 14px;
+    }
+    .content {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .meter-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .meter {
+      height: 10px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+    .meter > div {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--accent), var(--good));
+      transition: width 0.25s ease;
+    }
+    .eyebrow {
+      color: #d8eeff;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .prompt {
+      font-size: clamp(30px, 4vw, 46px);
+      line-height: 1.05;
+      margin: 0;
+    }
+    .hint {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    .options {
+      display: grid;
+      gap: 12px;
+    }
+    .option {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.035);
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .option:hover {
+      transform: translateY(-1px);
+      background: rgba(107,211,255,0.06);
+      border-color: rgba(107,211,255,0.28);
+    }
+    .option.selected {
+      background: rgba(107,211,255,0.1);
+      border-color: rgba(107,211,255,0.45);
+    }
+    .option.correct {
+      background: rgba(55,212,138,0.12);
+      border-color: rgba(55,212,138,0.5);
+    }
+    .option.wrong {
+      background: rgba(255,93,93,0.12);
+      border-color: rgba(255,93,93,0.45);
+    }
+    .option .letter {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: rgba(107,211,255,0.16);
+      color: #e6f8ff;
+      font-weight: 800;
+      font-size: 16px;
+    }
+    .option.correct .letter {
+      background: rgba(55,212,138,0.2);
+    }
+    .reveal {
+      min-height: 120px;
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.035);
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .reveal.show {
+      color: #f3fff9;
+      background: rgba(55,212,138,0.12);
+      border-color: rgba(55,212,138,0.45);
+    }
+    .reveal .title {
+      display: block;
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .grid-2 {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .grid-3 {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .btn, .select, .range-box {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      padding: 14px 16px;
+      font: inherit;
+    }
+    .btn {
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .btn.primary {
+      background: linear-gradient(90deg, #68d1ff, #48e0a1);
+      color: #072033;
+      border: none;
+    }
+    .select {
+      appearance: none;
+    }
+    .setting {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .setting .label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+    .setting .value {
+      font-weight: 700;
+      line-height: 1.4;
+    }
+    .footer-note {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    @media (max-width: 1020px) {
+      .layout { grid-template-columns: 1fr; }
+      .stage { min-height: 420px; }
+    }
+    @media (max-width: 680px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .app { padding: 14px; }
+      .content, .stage-card { padding: 16px; }
+      .stage-head { font-size: 12px; }
+      .prompt { font-size: 32px; }
+      .stage { min-height: 340px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <div>
+        <h1>UK Road Sign Quiz, 50 Questions</h1>
+        <div class="sub">A cleaner rebuild, based on official UK sign meanings and more faithful sign families. It tries to start the British voice automatically, with a one-tap fallback if the browser blocks speech.</div>
+      </div>
+      <div class="badge">🔊 British female browser voice preferred</div>
+    </div>
+
+    <div class="layout">
+      <section class="card stage-card">
+        <div class="stage-head">
+          <span id="stageLabel">Road sign</span>
+          <span id="categoryLabel">Prohibitory</span>
+        </div>
+        <div class="stage">
+          <div class="tap-layer" id="tapLayer">
+            <div class="tap-box">
+              <h3>Enable voice</h3>
+              <p>Your browser may need one tap before the British voice can play. Press start and it will run through the quiz automatically.</p>
+              <button class="btn primary" id="tapStartBtn" type="button">Start voice</button>
+            </div>
+          </div>
+          <div class="sign-wrap" id="signWrap"></div>
+        </div>
+      </section>
+
+      <section class="card content">
+        <div>
+          <div class="meter-row">
+            <div id="questionCount">Question 1 of 50</div>
+            <div id="statusText">Ready</div>
+          </div>
+          <div class="meter"><div id="meterBar"></div></div>
+        </div>
+
+        <div>
+          <div class="eyebrow" id="questionTag">Question 1</div>
+          <h2 class="prompt">What does this road sign mean?</h2>
+          <div class="hint" id="hintText">Pick the best answer from the three choices below.</div>
+        </div>
+
+        <div class="options" id="options"></div>
+
+        <div class="reveal" id="revealBox">The answer reveal and sign name will appear here after the pause.</div>
+
+        <div class="grid-2">
+          <button class="btn primary" id="startBtn" type="button">Start voice</button>
+          <button class="btn" id="replayBtn" type="button">Replay question</button>
+          <button class="btn" id="prevBtn" type="button">Previous</button>
+          <button class="btn" id="nextBtn" type="button">Next</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="setting">
+            <div class="label">Voice</div>
+            <select class="select" id="voiceSelect"></select>
+          </div>
+          <div class="setting">
+            <div class="label">Speech speed</div>
+            <input id="rateRange" type="range" min="0.85" max="1.1" step="0.05" value="0.95" style="width:100%;" />
+            <div class="value" id="rateValue">0.95x</div>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="setting">
+            <div class="label">Voice target</div>
+            <div class="value" id="voiceStatus">Looking for an en-GB female voice</div>
+          </div>
+          <div class="setting">
+            <div class="label">Mode</div>
+            <div class="value" id="modeStatus">Autoplay all 50</div>
+          </div>
+          <div class="setting">
+            <div class="label">Source style</div>
+            <div class="value">UK sign families, rebuilt in SVG</div>
+          </div>
+        </div>
+
+        <div class="footer-note">Best in Chrome or Edge. The voice uses your browser’s installed speech voices, so the exact British female voice depends on what your machine has available.</div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const QUESTION_BANK = [
+      { id: 'zone-20-entry', category: 'Zone', officialName: 'Entry to 20 mph zone', sign: { kind: 'zoneEntry', value: 20 }, choices: ['Entry to 20 mph zone', 'Maximum speed 20 mph', 'End of 20 mph limit'], correctIndex: 0 },
+      { id: 'zone-20-end', category: 'Zone', officialName: 'End of 20 mph zone', sign: { kind: 'zoneEnd', value: 20 }, choices: ['Entry to 20 mph zone', 'National speed limit applies', 'End of 20 mph zone'], correctIndex: 2 },
+      { id: 'max-speed', category: 'Prohibitory', officialName: 'Maximum speed', sign: { kind: 'speedLimit', value: 40 }, choices: ['Advisory speed limit', 'Minimum speed', 'Maximum speed'], correctIndex: 2 },
+      { id: 'national-speed', category: 'Prohibitory', officialName: 'National speed limit applies', sign: { kind: 'nationalSpeed' }, choices: ['National speed limit applies', 'End of all restrictions', 'Motorway begins'], correctIndex: 0 },
+      { id: 'stop', category: 'Priority', officialName: 'Stop and give way', sign: { kind: 'stop' }, choices: ['Stop and give way', 'No entry for vehicular traffic', 'No stopping'], correctIndex: 0 },
+      { id: 'give-way', category: 'Priority', officialName: 'Give way to traffic on major road', sign: { kind: 'giveWay' }, choices: ['Priority over oncoming vehicles', 'Stop and give way', 'Give way to traffic on major road'], correctIndex: 2 },
+      { id: 'no-entry', category: 'Prohibitory', officialName: 'No entry for vehicular traffic', sign: { kind: 'noEntry' }, choices: ['No motor vehicles', 'No vehicles except bicycles being pushed', 'No entry for vehicular traffic'], correctIndex: 2 },
+      { id: 'no-vehicles-except-cycles-pushed', category: 'Prohibitory', officialName: 'No vehicles except bicycles being pushed', sign: { kind: 'noVehiclesExceptCyclesPushed' }, choices: ['No cycling', 'No vehicles except bicycles being pushed', 'No motor vehicles'], correctIndex: 1 },
+      { id: 'no-cycling', category: 'Prohibitory', officialName: 'No cycling', sign: { kind: 'noCycling' }, choices: ['Segregated pedal cycle and pedestrian route', 'No cycling', 'Route to be used by pedal cycles only'], correctIndex: 1 },
+      { id: 'no-motor-vehicles', category: 'Prohibitory', officialName: 'No motor vehicles', sign: { kind: 'noMotorVehicles' }, choices: ['No goods vehicles', 'No motor vehicles', 'No entry for vehicular traffic'], correctIndex: 1 },
+      { id: 'no-buses', category: 'Prohibitory', officialName: 'No buses (over 8 passenger seats)', sign: { kind: 'noBuses' }, choices: ['Bus lane ahead', 'Buses and cycles only', 'No buses (over 8 passenger seats)'], correctIndex: 2 },
+      { id: 'no-overtaking', category: 'Prohibitory', officialName: 'No overtaking', sign: { kind: 'noOvertaking' }, choices: ['No motor vehicles', 'No overtaking', 'Give priority to vehicles from opposite direction'], correctIndex: 1 },
+      { id: 'no-caravans', category: 'Prohibitory', officialName: 'No towed caravans', sign: { kind: 'noCaravans' }, choices: ['No goods vehicles over maximum gross weight shown', 'No vehicles over length shown', 'No towed caravans'], correctIndex: 2 },
+      { id: 'height-limit', category: 'Prohibitory', officialName: 'No vehicles over height shown', sign: { kind: 'heightLimit', value: '4.4m' }, choices: ['Available width of headroom indicated', 'No vehicles over width shown', 'No vehicles over height shown'], correctIndex: 2 },
+      { id: 'width-limit', category: 'Prohibitory', officialName: 'No vehicles over width shown', sign: { kind: 'widthLimit', value: '2.0m' }, choices: ['No vehicles over width shown', 'No vehicles over maximum gross weight shown', 'No vehicles over height shown'], correctIndex: 0 },
+      { id: 'priority-opposite', category: 'Priority', officialName: 'Give priority to vehicles from opposite direction', sign: { kind: 'priorityOpposite' }, choices: ['No overtaking', 'Traffic has priority over oncoming vehicles', 'Give priority to vehicles from opposite direction'], correctIndex: 2 },
+      { id: 'no-right-turn', category: 'Prohibitory', officialName: 'No right turn', sign: { kind: 'noRightTurn' }, choices: ['Turn left ahead', 'No right turn', 'No U-turns'], correctIndex: 1 },
+      { id: 'no-left-turn', category: 'Prohibitory', officialName: 'No left turn', sign: { kind: 'noLeftTurn' }, choices: ['Keep left', 'Turn left', 'No left turn'], correctIndex: 2 },
+      { id: 'no-u-turns', category: 'Prohibitory', officialName: 'No U-turns', sign: { kind: 'noUTurn' }, choices: ['No U-turns', 'Roundabout', 'No right turn'], correctIndex: 0 },
+      { id: 'weight-limit', category: 'Prohibitory', officialName: 'No vehicles over maximum gross weight shown (in tonnes)', sign: { kind: 'weightLimit', value: '7.5t' }, choices: ['No goods vehicles over maximum gross weight shown except for loading and unloading', 'No vehicles over width shown', 'No vehicles over maximum gross weight shown (in tonnes)'], correctIndex: 2 },
+      { id: 'no-waiting', category: 'Parking', officialName: 'No waiting', sign: { kind: 'noWaiting' }, choices: ['Parking restricted to permit holders', 'No waiting', 'No stopping (Clearway)'], correctIndex: 1 },
+      { id: 'no-stopping', category: 'Parking', officialName: 'No stopping (Clearway)', sign: { kind: 'noStopping' }, choices: ['No waiting', 'No stopping (Clearway)', 'No stopping during period indicated except for buses'], correctIndex: 1 },
+      { id: 'permit-holders', category: 'Parking', officialName: 'Parking restricted to permit holders', sign: { kind: 'permitParking' }, choices: ['Parking restricted to permit holders', 'Parking place for solo motorcycles', 'No waiting'], correctIndex: 0 },
+      { id: 'ahead-only', category: 'Mandatory', officialName: 'Ahead only', sign: { kind: 'aheadOnly' }, choices: ['Ahead only', 'One-way traffic', 'Turn left ahead'], correctIndex: 0 },
+      { id: 'turn-left-ahead', category: 'Mandatory', officialName: 'Turn left ahead', sign: { kind: 'turnLeftAhead' }, choices: ['Turn left', 'Turn left ahead', 'Keep left'], correctIndex: 1 },
+      { id: 'turn-left', category: 'Mandatory', officialName: 'Turn left', sign: { kind: 'turnLeft' }, choices: ['Keep left', 'No left turn', 'Turn left'], correctIndex: 2 },
+      { id: 'keep-left', category: 'Mandatory', officialName: 'Keep left', sign: { kind: 'keepLeft' }, choices: ['Keep left', 'Vehicles may pass either side to reach same destination', 'Turn left'], correctIndex: 0 },
+      { id: 'pass-either-side', category: 'Mandatory', officialName: 'Vehicles may pass either side to reach same destination', sign: { kind: 'passEitherSide' }, choices: ['Keep left', 'Roundabout', 'Vehicles may pass either side to reach same destination'], correctIndex: 2 },
+      { id: 'mini-roundabout', category: 'Mandatory', officialName: 'Mini-roundabout (roundabout circulation - give way to vehicles from the immediate right)', sign: { kind: 'miniRoundabout' }, choices: ['Mini-roundabout (roundabout circulation - give way to vehicles from the immediate right)', 'Roundabout', 'No U-turns'], correctIndex: 0 },
+      { id: 'cycle-only', category: 'Mandatory', officialName: 'Route to be used by pedal cycles only', sign: { kind: 'cycleOnly' }, choices: ['No cycling', 'Segregated pedal cycle and pedestrian route', 'Route to be used by pedal cycles only'], correctIndex: 2 },
+      { id: 'segregated-cycle-ped', category: 'Mandatory', officialName: 'Segregated pedal cycle and pedestrian route', sign: { kind: 'segregatedCyclePed' }, choices: ['Recommended route for pedal cycles', 'Route to be used by pedal cycles only', 'Segregated pedal cycle and pedestrian route'], correctIndex: 2 },
+      { id: 'minimum-speed', category: 'Mandatory', officialName: 'Minimum speed', sign: { kind: 'minimumSpeed', value: 30 }, choices: ['Minimum speed', 'Maximum speed', 'End of minimum speed'], correctIndex: 0 },
+      { id: 'end-minimum-speed', category: 'Mandatory', officialName: 'End of minimum speed', sign: { kind: 'minimumSpeedEnd', value: 30 }, choices: ['National speed limit applies', 'End of 20 mph zone', 'End of minimum speed'], correctIndex: 2 },
+      { id: 'buses-cycles-only', category: 'Mandatory', officialName: 'Buses and cycles only', sign: { kind: 'busesCyclesOnly' }, choices: ['No buses (over 8 passenger seats)', 'With-flow bus and cycle lane', 'Buses and cycles only'], correctIndex: 2 },
+      { id: 'one-way-traffic', category: 'Information', officialName: 'One-way traffic', sign: { kind: 'oneWayTraffic' }, choices: ['Keep left', 'One-way traffic', 'Ahead only'], correctIndex: 1 },
+      { id: 'dual-carriageway-ends', category: 'Warning', officialName: 'Dual carriageway ends', sign: { kind: 'dualCarriagewayEnds' }, choices: ['Two-way traffic straight ahead', 'Road narrows on both sides', 'Dual carriageway ends'], correctIndex: 2 },
+      { id: 'road-narrows', category: 'Warning', officialName: 'Road narrows on both sides', sign: { kind: 'roadNarrowsBoth' }, choices: ['Dual carriageway ends', 'Road narrows on right', 'Road narrows on both sides'], correctIndex: 2 },
+      { id: 'crossroads', category: 'Warning', officialName: 'Crossroads', sign: { kind: 'crossroads' }, choices: ['Staggered junction', 'Crossroads', 'T-junction with priority over vehicles from the right'], correctIndex: 1 },
+      { id: 'staggered-junction', category: 'Warning', officialName: 'Staggered junction', sign: { kind: 'staggeredJunction' }, choices: ['Crossroads', 'Traffic merging from left ahead', 'Staggered junction'], correctIndex: 2 },
+      { id: 'roundabout', category: 'Warning', officialName: 'Roundabout', sign: { kind: 'roundaboutWarning' }, choices: ['Mini-roundabout', 'No U-turns', 'Roundabout'], correctIndex: 2 },
+      { id: 'bend-right', category: 'Warning', officialName: 'Bend to right', sign: { kind: 'bendRight' }, choices: ['Double bend first to left', 'Junction on bend ahead', 'Bend to right'], correctIndex: 2 },
+      { id: 'traffic-signals', category: 'Warning', officialName: 'Traffic signals', sign: { kind: 'trafficSignals' }, choices: ['Traffic signals', 'Traffic signals not in use', 'Light signals ahead at level crossing, airfield or bridge'], correctIndex: 0 },
+      { id: 'slippery-road', category: 'Warning', officialName: 'Slippery road', sign: { kind: 'slipperyRoad' }, choices: ['Soft verges', 'Uneven road', 'Slippery road'], correctIndex: 2 },
+      { id: 'steep-hill-down', category: 'Warning', officialName: 'Steep hill downwards', sign: { kind: 'steepHillDown', value: '20%' }, choices: ['Steep hill upwards', 'Uneven road', 'Steep hill downwards'], correctIndex: 2 },
+      { id: 'zebra-crossing', category: 'Warning', officialName: 'Zebra crossing', sign: { kind: 'zebraCrossing' }, choices: ['Pedestrians in road ahead', 'School crossing patrol ahead', 'Zebra crossing'], correctIndex: 2 },
+      { id: 'school-crossing-patrol', category: 'Warning', officialName: 'School crossing patrol ahead', sign: { kind: 'schoolCrossingPatrol' }, choices: ['Frail pedestrians likely to cross road ahead', 'School crossing patrol ahead', 'School crossing patrol'], correctIndex: 1 },
+      { id: 'pedestrians-ahead', category: 'Warning', officialName: 'Pedestrians in road ahead', sign: { kind: 'pedestriansAhead' }, choices: ['Pedestrians in road ahead', 'Zebra crossing', 'Frail pedestrians likely to cross road ahead'], correctIndex: 0 },
+      { id: 'cycle-route-ahead', category: 'Warning', officialName: 'Cycle route ahead', sign: { kind: 'cycleRouteAhead' }, choices: ['Route to be used by pedal cycles only', 'Cycle route ahead', 'Segregated pedal cycle and pedestrian route'], correctIndex: 1 },
+      { id: 'cattle', category: 'Warning', officialName: 'Cattle', sign: { kind: 'cattle' }, choices: ['Accompanied horses or ponies', 'Wild animals', 'Cattle'], correctIndex: 2 },
+      { id: 'priority-over-oncoming', category: 'Priority', officialName: 'Traffic has priority over oncoming vehicles', sign: { kind: 'priorityYou' }, choices: ['Traffic has priority over oncoming vehicles', 'Two-way traffic straight ahead', 'Give priority to vehicles from opposite direction'], correctIndex: 0 }
+    ];
+
+    const OFFICIAL_SIGN_IMAGES = {
+      'zone-20-entry': 'https://assets.digital.cabinet-office.gov.uk/media/55b9f29740f0b6151f000013/sign-giving-order-entry-20-zone.jpg',
+      'zone-20-end': 'https://assets.publishing.service.gov.uk/media/57f76285e5274a0eb7000029/sign-giving-order-end-20-zonev2.jpg',
+      'max-speed': 'https://assets.digital.cabinet-office.gov.uk/media/55b9f2dd40f0b6151f000015/sign-giving-order-maximum-speed.jpg',
+      'national-speed': 'https://assets.digital.cabinet-office.gov.uk/media/55b9f2f740f0b6151c00001d/sign-giving-order-national-speed-limit.jpg',
+      'stop': 'https://assets.digital.cabinet-office.gov.uk/media/55b9f330e5274a151e000022/sign-giving-order-stop-give-way.jpg',
+      'give-way': 'https://assets.digital.cabinet-office.gov.uk/media/55b9f373ed915d155f00001e/sign-giving-order-give-way.jpg',
+      'no-entry': 'https://assets.digital.cabinet-office.gov.uk/media/55b9f41b40f0b6151f000019/sign-giving-order-no-entry-vehicular-traffic.jpg',
+      'no-vehicles-except-cycles-pushed': 'https://assets.digital.cabinet-office.gov.uk/media/55b9f489e5274a151e000024/sign-giving-order-no-vehicles.jpg',
+      'no-cycling': 'https://assets.digital.cabinet-office.gov.uk/media/55b9f4a5ed915d155c00000f/sign-giving-order-no-cycling.jpg',
+      'no-motor-vehicles': 'https://assets.digital.cabinet-office.gov.uk/media/55b9f4d840f0b6151f00001b/sign-giving-order-no-motor-vehicles.jpg',
+      'no-buses': 'https://assets.digital.cabinet-office.gov.uk/media/55b9f4f0ed915d155f000020/sign-giving-order-no-buses.jpg',
+      'no-overtaking': 'https://assets.digital.cabinet-office.gov.uk/media/55b9f50240f0b6151c000021/sign-giving-order-no-overtaking.jpg',
+      'no-caravans': 'https://assets.digital.cabinet-office.gov.uk/media/55b9f52540f0b6151c000023/sign-giving-order-no-towed-caravans.jpg',
+      'height-limit': 'https://assets.digital.cabinet-office.gov.uk/media/55b9f5dc40f0b6151c000025/sign-giving-order-no-vehicles-over-height.jpg',
+      'width-limit': 'https://assets.digital.cabinet-office.gov.uk/media/55b9f60aed915d155f000022/sign-giving-order-no-vehicle-width.jpg',
+      'priority-opposite': 'https://assets.digital.cabinet-office.gov.uk/media/55b9f637e5274a151e000026/sign-giving-order-give-priority-vehicles.jpg',
+      'no-right-turn': 'https://assets.digital.cabinet-office.gov.uk/media/55b9f66fe5274a151e000028/sign-giving-order-no-right-turn.jpg',
+      'no-left-turn': 'https://assets.digital.cabinet-office.gov.uk/media/55b9f68740f0b6151f000021/sign-giving-order-no-left-turn.jpg',
+      'no-u-turns': 'https://assets.digital.cabinet-office.gov.uk/media/55b9f6aded915d155f000024/sign-giving-order-no-u-turn.jpg',
+      'weight-limit': 'https://assets.digital.cabinet-office.gov.uk/media/55b9ffe8e5274a151e00002c/sign-giving-order-no-vehicles-max-gross-weight.jpg',
+      'no-waiting': 'https://assets.digital.cabinet-office.gov.uk/media/55ba00a140f0b6151f000025/sign-giving-order-no-waiting.jpg',
+      'no-stopping': 'https://assets.digital.cabinet-office.gov.uk/media/55ba00b540f0b6151c000027/sign-giving-order-no-stopping.jpg',
+      'permit-holders': 'https://assets.digital.cabinet-office.gov.uk/media/55ba0058ed915d155c000011/sign-giving-order-park-restrict-permit-holders.jpg',
+      'ahead-only': 'https://assets.digital.cabinet-office.gov.uk/media/55cb16d9e5274a5473000021/sign-giving-order-ahead-only.jpg',
+      'turn-left-ahead': 'https://assets.digital.cabinet-office.gov.uk/media/55ba11ffe5274a151e000030/sign-giving-order-turn-left-ahead.jpg',
+      'turn-left': 'https://assets.digital.cabinet-office.gov.uk/media/55ba1211ed915d155c000017/sign-giving-order-turn-left.jpg',
+      'keep-left': 'https://assets.digital.cabinet-office.gov.uk/media/55ba123bed915d155c000019/sign-giving-order-keep-left.jpg',
+      'pass-either-side': 'https://assets.digital.cabinet-office.gov.uk/media/55ba124eed915d155c00001b/sign-giving-order-vehicle-pass-either-side.jpg',
+      'mini-roundabout': 'https://assets.digital.cabinet-office.gov.uk/media/55ba126540f0b6151c00002b/sign-giving-order-mini-roundabout.jpg',
+      'cycle-only': 'https://assets.digital.cabinet-office.gov.uk/media/55ba1284e5274a1521000023/sign-giving-order-route-pedal-cycles-only.jpg',
+      'segregated-cycle-ped': 'https://assets.digital.cabinet-office.gov.uk/media/55ba12b1ed915d155c00001d/sign-giving-order-segregated-cycle-pedestrian-route.jpg',
+      'minimum-speed': 'https://assets.digital.cabinet-office.gov.uk/media/55ba12c140f0b6151f000027/sign-giving-order-minimum-speed.jpg',
+      'end-minimum-speed': 'https://assets.digital.cabinet-office.gov.uk/media/55ba12d3e5274a151e000032/sign-giving-order-minimum-speed-end.jpg',
+      'buses-cycles-only': 'https://assets.publishing.service.gov.uk/media/68e3cbcc49e17d00a56ffe3c/sign-giving-order-buses-cycles-only.jpg',
+      'one-way-traffic': 'https://assets.digital.cabinet-office.gov.uk/media/55ba132ee5274a151e000036/sign-giving-order-one-way-traffic.jpg',
+      'dual-carriageway-ends': 'https://assets.digital.cabinet-office.gov.uk/media/55b75e47e5274a215200000c/warning-sign-dual-carriageway-ends.jpg',
+      'road-narrows': 'https://assets.digital.cabinet-office.gov.uk/media/55b75f15ed915d07fe000007/warning-sign-road-narrow-both-sides.jpg',
+      'crossroads': 'https://assets.digital.cabinet-office.gov.uk/media/55b7696640f0b6790f000011/warning-sign-crossroads.jpg',
+      'staggered-junction': 'https://assets.digital.cabinet-office.gov.uk/media/55b769e040f0b67aa300000d/warning-sign-staggered-junction.jpg',
+      'roundabout': 'https://assets.digital.cabinet-office.gov.uk/media/55b76a79ed915d07fe00000b/warning-sign-roundabout.jpg',
+      'bend-right': 'https://assets.digital.cabinet-office.gov.uk/media/55b76a5d40f0b67aa300000f/warning-sign-bend-to-right.jpg',
+      'traffic-signals': 'https://assets.digital.cabinet-office.gov.uk/media/55b76bd2e5274a21ec00000c/warning-sign-traffic-signals.jpg',
+      'slippery-road': 'https://assets.digital.cabinet-office.gov.uk/media/55b76bec40f0b6790f000019/warning-sign-slippery-road.jpg',
+      'steep-hill-down': 'https://assets.digital.cabinet-office.gov.uk/media/55b76c11ed915d07fe000013/warning-sign-steep-hill-downwards.jpg',
+      'zebra-crossing': 'https://assets.digital.cabinet-office.gov.uk/media/55b76e1040f0b6790f00001d/warning-sign-zebra-crossing.jpg',
+      'school-crossing-patrol': 'https://assets.digital.cabinet-office.gov.uk/media/55b76da940f0b67aa3000019/warning-sign-school-crossing-patrol-ahead.jpg',
+      'pedestrians-ahead': 'https://assets.digital.cabinet-office.gov.uk/media/55b76dfbed915d07fe000017/warning-sign-pedestrians-in-road-ahead.jpg',
+      'cycle-route-ahead': 'https://assets.digital.cabinet-office.gov.uk/media/55b76fbced915d07e200000f/warning-sign-cycle-route-ahead.jpg',
+      'cattle': 'https://assets.digital.cabinet-office.gov.uk/media/55b76f56e5274a21ec000018/warning-sign-cattle.jpg',
+      'priority-over-oncoming': 'https://assets.digital.cabinet-office.gov.uk/media/55b8befce5274a151e000017/Information-sign-traffic-priority-over-oncoming-vehicles.jpg'
+    };
+
+    const SIGN_THEME = {
+      ukRed: '#d91f26',
+      ukBlue: '#0d66c2',
+      ukBlack: '#111111',
+      ukWhite: '#ffffff',
+      paper: '#f4f7fa',
+      shadowBg: '#eef3f7'
+    };
+
+    const state = {
+      index: 0,
+      autoplay: true,
+      started: false,
+      hasSpoken: false,
+      speechToken: 0,
+      timers: [],
+      voices: [],
+      selectedVoice: null,
+      awaitingAnswer: false,
+      answered: false,
+      selectedIndex: null
+    };
+
+    const els = {
+      signWrap: document.getElementById('signWrap'),
+      questionCount: document.getElementById('questionCount'),
+      statusText: document.getElementById('statusText'),
+      meterBar: document.getElementById('meterBar'),
+      questionTag: document.getElementById('questionTag'),
+      hintText: document.getElementById('hintText'),
+      options: document.getElementById('options'),
+      revealBox: document.getElementById('revealBox'),
+      stageLabel: document.getElementById('stageLabel'),
+      categoryLabel: document.getElementById('categoryLabel'),
+      tapLayer: document.getElementById('tapLayer'),
+      tapStartBtn: document.getElementById('tapStartBtn'),
+      startBtn: document.getElementById('startBtn'),
+      replayBtn: document.getElementById('replayBtn'),
+      prevBtn: document.getElementById('prevBtn'),
+      nextBtn: document.getElementById('nextBtn'),
+      voiceSelect: document.getElementById('voiceSelect'),
+      voiceStatus: document.getElementById('voiceStatus'),
+      rateRange: document.getElementById('rateRange'),
+      rateValue: document.getElementById('rateValue'),
+      modeStatus: document.getElementById('modeStatus')
+    };
+
+    const LETTERS = ['A', 'B', 'C'];
+
+    function clearTimers() {
+      state.timers.forEach(clearTimeout);
+      state.timers = [];
+    }
+
+    function after(ms) {
+      return new Promise(resolve => {
+        const id = setTimeout(resolve, ms);
+        state.timers.push(id);
+      });
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function setStatus(text) {
+      els.statusText.textContent = text;
+    }
+
+    function svgShell(inner, opts = {}) {
+      const bg = opts.bg || 'transparent';
+      return `
+        <svg viewBox="0 0 420 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="UK road sign">
+          <rect width="420" height="420" rx="34" fill="${bg}" />
+          ${inner}
+        </svg>
+      `;
+    }
+
+    function redRing(inner) {
+      return svgShell(`
+        <circle cx="210" cy="210" r="150" fill="#fff" stroke="${SIGN_THEME.ukRed}" stroke-width="34" />
+        ${inner}
+      `);
+    }
+
+    function blueCircle(inner) {
+      return svgShell(`
+        <circle cx="210" cy="210" r="150" fill="${SIGN_THEME.ukBlue}" stroke="#fff" stroke-width="12" />
+        ${inner}
+      `);
+    }
+
+    function warningTriangle(inner) {
+      return svgShell(`
+        <polygon points="210,52 362,326 58,326" fill="#fff" stroke="${SIGN_THEME.ukRed}" stroke-width="24" stroke-linejoin="round" />
+        ${inner}
+      `);
+    }
+
+    function whiteRect(inner, blueBorder = false) {
+      return svgShell(`
+        <rect x="68" y="88" width="284" height="244" rx="16" fill="#fff" stroke="${blueBorder ? SIGN_THEME.ukBlue : SIGN_THEME.ukBlack}" stroke-width="${blueBorder ? 12 : 8}" />
+        ${inner}
+      `, { bg: 'transparent' });
+    }
+
+    function blueRect(inner) {
+      return svgShell(`
+        <rect x="70" y="95" width="280" height="230" rx="18" fill="${SIGN_THEME.ukBlue}" stroke="#fff" stroke-width="10" />
+        ${inner}
+      `);
+    }
+
+    function stopSign() {
+      return svgShell(`
+        <polygon points="150,55 270,55 345,130 345,250 270,325 150,325 75,250 75,130" fill="${SIGN_THEME.ukRed}" stroke="#fff" stroke-width="16" />
+        <text x="210" y="235" text-anchor="middle" font-size="76" font-weight="900" fill="#fff" font-family="Arial, sans-serif">STOP</text>
+      `);
+    }
+
+    function giveWaySign() {
+      return svgShell(`
+        <polygon points="210,330 355,83 65,83" fill="#fff" stroke="${SIGN_THEME.ukRed}" stroke-width="24" stroke-linejoin="round" />
+      `);
+    }
+
+    function arrowStraight(direction = 'up', fill = '#fff') {
+      if (direction === 'down') {
+        return `<path d="M210 325 L145 250 L182 250 L182 115 L238 115 L238 250 L275 250 Z" fill="${fill}" />`;
+      }
+      return `<path d="M210 95 L275 170 L238 170 L238 305 L182 305 L182 170 L145 170 Z" fill="${fill}" />`;
+    }
+
+    function arrowBentLeft(fill = '#fff') {
+      return `<path d="M250 303 C176 290 144 236 144 185 C144 139 175 108 220 108 L220 79 L287 128 L220 177 L220 145 C197 145 182 160 182 183 C182 216 205 246 260 260 Z" fill="${fill}" />`;
+    }
+
+    function arrowBentRight(fill = '#111') {
+      return `<path d="M170 303 C244 290 276 236 276 185 C276 139 245 108 200 108 L200 79 L133 128 L200 177 L200 145 C223 145 238 160 238 183 C238 216 215 246 160 260 Z" fill="${fill}" />`;
+    }
+
+    function arrowLeft(fill = '#fff') {
+      return `<path d="M135 210 L205 145 L205 178 L300 178 L300 242 L205 242 L205 275 Z" fill="${fill}" />`;
+    }
+
+    function arrowRight(fill = '#111') {
+      return `<path d="M285 210 L215 145 L215 178 L120 178 L120 242 L215 242 L215 275 Z" fill="${fill}" />`;
+    }
+
+    function keepLeftSymbol() {
+      return `
+        <rect x="214" y="118" width="26" height="178" rx="13" fill="#fff" />
+        <path d="M226 98 L286 167 L248 167 L248 299 L202 299 L202 185 L158 185 Z" fill="#fff" />
+        <rect x="176" y="152" width="20" height="140" rx="10" fill="${SIGN_THEME.ukRed}" />
+      `;
+    }
+
+    function splitAroundIsland() {
+      return `
+        <rect x="199" y="128" width="22" height="166" rx="11" fill="#fff" opacity="0.95" />
+        <path d="M165 300 C150 240 152 184 184 142 L152 142 L196 90 L224 152 L197 152 C179 182 178 226 194 287 Z" fill="#fff" />
+        <path d="M255 300 C270 240 268 184 236 142 L268 142 L224 90 L196 152 L223 152 C241 182 242 226 226 287 Z" fill="#fff" />
+      `;
+    }
+
+    function miniRoundaboutSymbol(fill = '#fff') {
+      return `
+        <g transform="translate(210 210)">
+          <path d="M-10 -82 C24 -82 54 -54 54 -18 L78 -18 L46 24 L14 -18 L32 -18 C32 -40 15 -56 -10 -56 Z" fill="${fill}" />
+          <path d="M72 36 C58 66 23 81 -8 68 L-18 88 L-46 44 L5 35 L-4 50 C13 59 36 52 46 32 Z" fill="${fill}" />
+          <path d="M-72 36 C-58 66 -23 81 8 68 L18 88 L46 44 L-5 35 L4 50 C-13 59 -36 52 -46 32 Z" fill="${fill}" />
+        </g>
+      `;
+    }
+
+    function bikeSymbol(stroke = '#111') {
+      return `
+        <circle cx="155" cy="258" r="34" fill="none" stroke="${stroke}" stroke-width="12" />
+        <circle cx="265" cy="258" r="34" fill="none" stroke="${stroke}" stroke-width="12" />
+        <path d="M155 258 L198 203 L232 258 L197 258 L173 223" fill="none" stroke="${stroke}" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M198 203 L228 203" fill="none" stroke="${stroke}" stroke-width="12" stroke-linecap="round" />
+        <path d="M210 173 L198 203" fill="none" stroke="${stroke}" stroke-width="12" stroke-linecap="round" />
+      `;
+    }
+
+    function carSymbol(fill = '#111') {
+      return `
+        <path d="M120 204 L140 170 C145 160 154 154 166 154 H226 C238 154 248 160 254 171 L268 204 V240 H120 Z" fill="${fill}" />
+        <rect x="142" y="172" width="90" height="28" rx="8" fill="#fff" opacity="0.12" />
+        <circle cx="156" cy="242" r="18" fill="${fill}" />
+        <circle cx="234" cy="242" r="18" fill="${fill}" />
+      `;
+    }
+
+    function motorcycleSymbol(stroke = '#111') {
+      return `
+        <circle cx="258" cy="246" r="17" fill="none" stroke="${stroke}" stroke-width="10" />
+        <circle cx="311" cy="246" r="17" fill="none" stroke="${stroke}" stroke-width="10" />
+        <path d="M258 246 L280 214 L300 246 L275 246" fill="none" stroke="${stroke}" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M280 214 L296 200" fill="none" stroke="${stroke}" stroke-width="10" stroke-linecap="round" />
+      `;
+    }
+
+    function busSymbol(fill = '#111') {
+      return `
+        <rect x="118" y="150" width="184" height="104" rx="18" fill="${fill}" />
+        <rect x="132" y="166" width="142" height="34" rx="8" fill="#fff" opacity="0.15" />
+        <circle cx="160" cy="262" r="17" fill="${fill}" />
+        <circle cx="260" cy="262" r="17" fill="${fill}" />
+      `;
+    }
+
+    function caravanSymbol(stroke = '#111') {
+      return `
+        <rect x="132" y="177" width="110" height="70" rx="14" fill="none" stroke="${stroke}" stroke-width="12" />
+        <rect x="155" y="192" width="44" height="20" rx="5" fill="none" stroke="${stroke}" stroke-width="9" />
+        <circle cx="220" cy="252" r="14" fill="none" stroke="${stroke}" stroke-width="10" />
+        <path d="M242 222 L278 210" fill="none" stroke="${stroke}" stroke-width="10" stroke-linecap="round" />
+      `;
+    }
+
+    function cowSymbol(fill = '#111') {
+      return `
+        <path d="M118 226 C118 186 148 166 190 166 H248 C280 166 303 184 303 208 C303 235 287 253 257 257 L248 286 H228 L223 259 H188 L184 286 H163 L160 257 C136 252 118 242 118 226 Z" fill="${fill}" />
+        <path d="M248 176 L270 162 L275 178" fill="${fill}" />
+        <circle cx="137" cy="208" r="8" fill="#fff" />
+      `;
+    }
+
+    function pedestrianPair(stroke = '#111') {
+      return `
+        <circle cx="172" cy="156" r="14" fill="${stroke}" />
+        <circle cx="222" cy="170" r="13" fill="${stroke}" />
+        <path d="M171 171 L166 230" stroke="${stroke}" stroke-width="13" stroke-linecap="round" />
+        <path d="M222 183 L218 244" stroke="${stroke}" stroke-width="13" stroke-linecap="round" />
+        <path d="M166 230 L144 286" stroke="${stroke}" stroke-width="13" stroke-linecap="round" />
+        <path d="M166 230 L187 281" stroke="${stroke}" stroke-width="13" stroke-linecap="round" />
+        <path d="M218 244 L197 292" stroke="${stroke}" stroke-width="13" stroke-linecap="round" />
+        <path d="M218 244 L245 292" stroke="${stroke}" stroke-width="13" stroke-linecap="round" />
+        <path d="M165 196 L204 219" stroke="${stroke}" stroke-width="11" stroke-linecap="round" />
+        <path d="M218 209 L186 200" stroke="${stroke}" stroke-width="11" stroke-linecap="round" />
+      `;
+    }
+
+    function schoolCrossingPatrolSymbol() {
+      return `
+        <circle cx="170" cy="154" r="14" fill="#111" />
+        <path d="M170 168 L168 230" stroke="#111" stroke-width="13" stroke-linecap="round" />
+        <path d="M168 190 L135 213" stroke="#111" stroke-width="11" stroke-linecap="round" />
+        <path d="M168 230 L145 286" stroke="#111" stroke-width="13" stroke-linecap="round" />
+        <path d="M168 230 L188 284" stroke="#111" stroke-width="13" stroke-linecap="round" />
+        <circle cx="226" cy="172" r="12" fill="#111" />
+        <path d="M225 184 L222 244" stroke="#111" stroke-width="11" stroke-linecap="round" />
+        <path d="M222 204 L188 195" stroke="#111" stroke-width="10" stroke-linecap="round" />
+        <path d="M222 244 L204 290" stroke="#111" stroke-width="11" stroke-linecap="round" />
+        <path d="M222 244 L247 290" stroke="#111" stroke-width="11" stroke-linecap="round" />
+        <circle cx="126" cy="204" r="22" fill="#111" />
+        <line x1="126" y1="188" x2="126" y2="220" stroke="#fff" stroke-width="6" stroke-linecap="round" />
+        <line x1="110" y1="204" x2="142" y2="204" stroke="#fff" stroke-width="6" stroke-linecap="round" />
+      `;
+    }
+
+    function zebraCrossingSymbol() {
+      return `
+        <g>
+          <rect x="126" y="238" width="164" height="16" fill="#111" />
+          <rect x="137" y="226" width="20" height="12" fill="#111" />
+          <rect x="170" y="226" width="20" height="12" fill="#111" />
+          <rect x="203" y="226" width="20" height="12" fill="#111" />
+          <rect x="236" y="226" width="20" height="12" fill="#111" />
+          <rect x="269" y="226" width="20" height="12" fill="#111" />
+          <circle cx="186" cy="166" r="15" fill="#111" />
+          <path d="M186 182 L182 228" stroke="#111" stroke-width="12" stroke-linecap="round" />
+          <path d="M182 196 L152 212" stroke="#111" stroke-width="10" stroke-linecap="round" />
+          <path d="M184 230 L163 279" stroke="#111" stroke-width="11" stroke-linecap="round" />
+          <path d="M184 229 L209 279" stroke="#111" stroke-width="11" stroke-linecap="round" />
+          <path d="M183 199 L214 187" stroke="#111" stroke-width="10" stroke-linecap="round" />
+        </g>
+      `;
+    }
+
+    function trafficSignalsSymbol() {
+      return `
+        <rect x="181" y="126" width="58" height="142" rx="22" fill="#111" />
+        <circle cx="210" cy="161" r="15" fill="#d91f26" />
+        <circle cx="210" cy="198" r="15" fill="#f2c94c" />
+        <circle cx="210" cy="235" r="15" fill="#37d48a" />
+        <rect x="203" y="268" width="14" height="48" fill="#111" />
+      `;
+    }
+
+    function roundaboutWarningSymbol(fill = '#111') {
+      return `
+        <g transform="translate(0 12)">
+          <path d="M210 118 C242 118 268 143 268 174 L290 174 L258 216 L226 174 L245 174 C245 156 231 142 210 142 Z" fill="${fill}" />
+          <path d="M281 214 C268 243 235 257 206 245 L196 264 L169 221 L219 213 L210 228 C225 237 246 230 255 211 Z" fill="${fill}" />
+          <path d="M139 214 C152 243 185 257 214 245 L224 264 L251 221 L201 213 L210 228 C195 237 174 230 165 211 Z" fill="${fill}" />
+        </g>
+      `;
+    }
+
+    function renderSign(spec) {
+      switch (spec.kind) {
+        case 'zoneEntry':
+          return whiteRect(`
+            <circle cx="210" cy="175" r="74" fill="#fff" stroke="${SIGN_THEME.ukRed}" stroke-width="18" />
+            <text x="210" y="197" text-anchor="middle" font-size="70" font-weight="900" fill="#111" font-family="Arial, sans-serif">${spec.value}</text>
+            <text x="210" y="285" text-anchor="middle" font-size="44" font-weight="700" fill="#111" font-family="Arial, sans-serif">Zone</text>
+          `);
+        case 'zoneEnd':
+          return whiteRect(`
+            <circle cx="210" cy="175" r="74" fill="#fff" stroke="#111" stroke-width="14" />
+            <text x="210" y="197" text-anchor="middle" font-size="70" font-weight="900" fill="#111" font-family="Arial, sans-serif">${spec.value}</text>
+            <line x1="135" y1="110" x2="285" y2="240" stroke="#111" stroke-width="15" />
+            <text x="210" y="285" text-anchor="middle" font-size="44" font-weight="700" fill="#111" font-family="Arial, sans-serif">Zone</text>
+          `);
+        case 'speedLimit':
+          return redRing(`<text x="210" y="234" text-anchor="middle" font-size="96" font-weight="900" fill="#111" font-family="Arial, sans-serif">${spec.value}</text>`);
+        case 'nationalSpeed':
+          return redRing(`
+            <line x1="135" y1="112" x2="205" y2="286" stroke="#111" stroke-width="24" />
+            <line x1="205" y1="112" x2="275" y2="286" stroke="#111" stroke-width="24" />
+          `);
+        case 'stop':
+          return stopSign();
+        case 'giveWay':
+          return giveWaySign();
+        case 'noEntry':
+          return redRing(`<rect x="110" y="188" width="200" height="44" rx="22" fill="#fff" />`);
+        case 'noVehiclesExceptCyclesPushed':
+          return svgShell(`
+            <rect x="72" y="70" width="276" height="230" rx="20" fill="#f4f7fa" />
+            <circle cx="210" cy="160" r="86" fill="#fff" stroke="${SIGN_THEME.ukRed}" stroke-width="28" />
+            ${carSymbol()}${motorcycleSymbol()}
+            <rect x="96" y="278" width="228" height="52" rx="12" fill="#fff" stroke="#111" stroke-width="6" />
+            <text x="210" y="311" text-anchor="middle" font-size="20" font-weight="700" fill="#111" font-family="Arial, sans-serif">Except cycles being pushed</text>
+          `);
+        case 'noCycling':
+          return redRing(`<g transform="translate(0 -2)">${bikeSymbol('#111')}</g>`);
+        case 'noMotorVehicles':
+          return redRing(`${carSymbol()}${motorcycleSymbol()}`);
+        case 'noBuses':
+          return redRing(`${busSymbol()}`);
+        case 'noOvertaking':
+          return redRing(`
+            <path d="M128 156 H168 C180 156 190 166 190 178 V272 H128 Z" fill="${SIGN_THEME.ukBlack}" />
+            <path d="M230 156 H270 C282 156 292 166 292 178 V272 H230 Z" fill="${SIGN_THEME.ukRed}" />
+            <circle cx="150" cy="286" r="18" fill="${SIGN_THEME.ukBlack}" />
+            <circle cx="170" cy="286" r="18" fill="${SIGN_THEME.ukBlack}" />
+            <circle cx="252" cy="286" r="18" fill="${SIGN_THEME.ukRed}" />
+            <circle cx="272" cy="286" r="18" fill="${SIGN_THEME.ukRed}" />
+          `);
+        case 'noCaravans':
+          return redRing(`
+            <path d="M110 223 H152" stroke="#111" stroke-width="10" stroke-linecap="round" />
+            <g transform="translate(-8 0)">${carSymbol('#111')}</g>
+            <g transform="translate(44 8)">${caravanSymbol('#111')}</g>
+          `);
+        case 'heightLimit':
+          return redRing(`
+            <path d="M210 120 L190 145 H202 V250 H218 V145 H230 Z" fill="#111" />
+            <path d="M210 300 L190 275 H202 V170 H218 V275 H230 Z" fill="#111" />
+            <rect x="138" y="176" width="144" height="68" rx="14" fill="#fff" />
+            <text x="210" y="221" text-anchor="middle" font-size="48" font-weight="800" fill="#111" font-family="Arial, sans-serif">${spec.value}</text>
+          `);
+        case 'widthLimit':
+          return redRing(`
+            <path d="M116 210 L141 188 V200 H250 V220 H141 V232 Z" fill="#111" />
+            <path d="M304 210 L279 188 V200 H170 V220 H279 V232 Z" fill="#111" />
+            <rect x="136" y="176" width="148" height="68" rx="14" fill="#fff" />
+            <text x="210" y="221" text-anchor="middle" font-size="46" font-weight="800" fill="#111" font-family="Arial, sans-serif">${spec.value}</text>
+          `);
+        case 'priorityOpposite':
+          return redRing(`
+            <path d="M165 290 L165 138 L135 138 L175 92 L215 138 L186 138 L186 290 Z" fill="${SIGN_THEME.ukRed}" />
+            <path d="M255 128 L255 280 L285 280 L245 326 L205 280 L234 280 L234 128 Z" fill="#111" />
+          `);
+        case 'noRightTurn':
+          return redRing(`${arrowBentRight('#111')}
+            <line x1="104" y1="104" x2="316" y2="316" stroke="${SIGN_THEME.ukRed}" stroke-width="22" />`);
+        case 'noLeftTurn':
+          return redRing(`${arrowBentLeft('#111')}
+            <line x1="104" y1="104" x2="316" y2="316" stroke="${SIGN_THEME.ukRed}" stroke-width="22" />`);
+        case 'noUTurn':
+          return redRing(`
+            <path d="M264 282 C215 282 176 245 176 198 V156 H147 L190 106 L233 156 H204 V198 C204 227 226 248 254 248 H278 V282 Z" fill="#111" />
+            <line x1="104" y1="104" x2="316" y2="316" stroke="${SIGN_THEME.ukRed}" stroke-width="22" />
+          `);
+        case 'weightLimit':
+          return redRing(`<text x="210" y="230" text-anchor="middle" font-size="82" font-weight="900" fill="#111" font-family="Arial, sans-serif">${spec.value}</text>`);
+        case 'noWaiting':
+          return svgShell(`
+            <circle cx="210" cy="210" r="150" fill="${SIGN_THEME.ukBlue}" stroke="${SIGN_THEME.ukRed}" stroke-width="34" />
+            <line x1="125" y1="125" x2="295" y2="295" stroke="${SIGN_THEME.ukRed}" stroke-width="22" />
+          `);
+        case 'noStopping':
+          return svgShell(`
+            <circle cx="210" cy="210" r="150" fill="${SIGN_THEME.ukBlue}" stroke="${SIGN_THEME.ukRed}" stroke-width="34" />
+            <line x1="125" y1="125" x2="295" y2="295" stroke="${SIGN_THEME.ukRed}" stroke-width="22" />
+            <line x1="295" y1="125" x2="125" y2="295" stroke="${SIGN_THEME.ukRed}" stroke-width="22" />
+          `);
+        case 'permitParking':
+          return whiteRect(`
+            <rect x="112" y="128" width="74" height="118" rx="12" fill="${SIGN_THEME.ukBlue}" />
+            <text x="149" y="210" text-anchor="middle" font-size="90" font-weight="900" fill="#fff" font-family="Arial, sans-serif">P</text>
+            <rect x="200" y="128" width="108" height="118" rx="10" fill="#fff" stroke="#111" stroke-width="6" />
+            <text x="254" y="170" text-anchor="middle" font-size="20" font-weight="700" fill="#111" font-family="Arial, sans-serif">Permit</text>
+            <text x="254" y="198" text-anchor="middle" font-size="20" font-weight="700" fill="#111" font-family="Arial, sans-serif">holders</text>
+            <text x="254" y="226" text-anchor="middle" font-size="20" font-weight="700" fill="#111" font-family="Arial, sans-serif">only</text>
+          `, true);
+        case 'aheadOnly':
+          return blueCircle(arrowStraight('up', '#fff'));
+        case 'turnLeftAhead':
+          return blueCircle(arrowBentLeft('#fff'));
+        case 'turnLeft':
+          return blueCircle(arrowLeft('#fff'));
+        case 'keepLeft':
+          return blueCircle(keepLeftSymbol());
+        case 'passEitherSide':
+          return blueCircle(splitAroundIsland());
+        case 'miniRoundabout':
+          return blueCircle(miniRoundaboutSymbol('#fff'));
+        case 'cycleOnly':
+          return blueCircle(`<g transform="translate(0 -4)">${bikeSymbol('#fff')}</g>`);
+        case 'segregatedCyclePed':
+          return blueCircle(`
+            <rect x="208" y="92" width="10" height="236" fill="#fff" opacity="0.95" />
+            <g transform="translate(-18 4)">
+              <circle cx="170" cy="155" r="14" fill="#fff" />
+              <path d="M170 170 L168 232" stroke="#fff" stroke-width="12" stroke-linecap="round" />
+              <path d="M168 194 L140 215" stroke="#fff" stroke-width="10" stroke-linecap="round" />
+              <path d="M168 232 L148 286" stroke="#fff" stroke-width="12" stroke-linecap="round" />
+              <path d="M168 232 L188 286" stroke="#fff" stroke-width="12" stroke-linecap="round" />
+              <path d="M168 196 L195 186" stroke="#fff" stroke-width="10" stroke-linecap="round" />
+            </g>
+            <g transform="translate(26 0)">${bikeSymbol('#fff')}</g>
+          `);
+        case 'minimumSpeed':
+          return blueCircle(`<text x="210" y="234" text-anchor="middle" font-size="96" font-weight="900" fill="#fff" font-family="Arial, sans-serif">${spec.value}</text>`);
+        case 'minimumSpeedEnd':
+          return blueCircle(`
+            <text x="210" y="234" text-anchor="middle" font-size="96" font-weight="900" fill="#fff" font-family="Arial, sans-serif">${spec.value}</text>
+            <line x1="112" y1="112" x2="308" y2="308" stroke="${SIGN_THEME.ukRed}" stroke-width="22" />
+          `);
+        case 'busesCyclesOnly':
+          return blueCircle(`
+            <g transform="translate(4 -10)">${busSymbol('#fff').replace(/opacity="0.15"/g, 'opacity="0.0"')}</g>
+            <g transform="translate(16 76) scale(0.68)">${bikeSymbol('#fff')}</g>
+          `);
+        case 'oneWayTraffic':
+          return blueRect(`
+            ${arrowStraight('up', '#fff')}
+          `);
+        case 'dualCarriagewayEnds':
+          return warningTriangle(`
+            <path d="M155 302 L190 132 L212 132 L202 302 Z" fill="#111" />
+            <path d="M265 302 L230 132 L208 132 L218 302 Z" fill="#111" />
+            <rect x="204" y="122" width="12" height="112" fill="#fff" />
+          `);
+        case 'roadNarrowsBoth':
+          return warningTriangle(`
+            <path d="M142 300 L184 128 L210 128 L170 300 Z" fill="#111" />
+            <path d="M278 300 L236 128 L210 128 L250 300 Z" fill="#111" />
+          `);
+        case 'crossroads':
+          return warningTriangle(`
+            <rect x="194" y="126" width="32" height="170" fill="#111" />
+            <rect x="124" y="196" width="172" height="32" fill="#111" />
+          `);
+        case 'staggeredJunction':
+          return warningTriangle(`
+            <rect x="194" y="126" width="32" height="170" fill="#111" />
+            <rect x="130" y="176" width="96" height="30" fill="#111" />
+            <rect x="194" y="228" width="96" height="30" fill="#111" />
+          `);
+        case 'roundaboutWarning':
+          return warningTriangle(roundaboutWarningSymbol('#111'));
+        case 'bendRight':
+          return warningTriangle(`<path d="M154 298 C154 223 172 180 226 142 C245 128 258 114 265 96" fill="none" stroke="#111" stroke-width="24" stroke-linecap="round" />`);
+        case 'trafficSignals':
+          return warningTriangle(trafficSignalsSymbol());
+        case 'slipperyRoad':
+          return warningTriangle(`
+            <g transform="translate(0 -4)">
+              <rect x="152" y="174" width="60" height="28" rx="7" fill="#111" />
+              <circle cx="166" cy="206" r="13" fill="#111" />
+              <circle cx="198" cy="206" r="13" fill="#111" />
+              <path d="M118 252 C146 225 172 288 202 252 C232 216 258 286 300 252" fill="none" stroke="#111" stroke-width="16" stroke-linecap="round" />
+            </g>
+          `);
+        case 'steepHillDown':
+          return warningTriangle(`
+            <path d="M124 182 L298 280" stroke="#111" stroke-width="18" stroke-linecap="round" />
+            <rect x="230" y="224" width="32" height="34" fill="#111" />
+            <circle cx="228" cy="268" r="14" fill="#111" />
+            <circle cx="258" cy="286" r="14" fill="#111" />
+            <text x="128" y="294" font-size="30" font-weight="800" fill="#111" font-family="Arial, sans-serif">${spec.value}</text>
+          `);
+        case 'zebraCrossing':
+          return warningTriangle(zebraCrossingSymbol());
+        case 'schoolCrossingPatrol':
+          return warningTriangle(schoolCrossingPatrolSymbol());
+        case 'pedestriansAhead':
+          return warningTriangle(pedestrianPair('#111'));
+        case 'cycleRouteAhead':
+          return warningTriangle(`<g transform="translate(0 -8)">${bikeSymbol('#111')}</g>`);
+        case 'cattle':
+          return warningTriangle(cowSymbol('#111'));
+        case 'priorityYou':
+          return whiteRect(`
+            <path d="M180 292 L180 124 L148 124 L194 82 L240 124 L208 124 L208 292 Z" fill="#111" />
+            <path d="M258 138 L258 266 L284 266 L240 312 L196 266 L224 266 L224 138 Z" fill="${SIGN_THEME.ukRed}" />
+          `);
+        default:
+          return svgShell(`<circle cx="210" cy="210" r="150" fill="#fff" stroke="${SIGN_THEME.ukBlue}" stroke-width="18" /><text x="210" y="220" text-anchor="middle" font-size="30" font-weight="700" fill="${SIGN_THEME.ukBlue}" font-family="Arial, sans-serif">ROAD SIGN</text>`);
+      }
+    }
+
+    function renderQuestion() {
+      const q = QUESTION_BANK[state.index];
+      const officialImage = OFFICIAL_SIGN_IMAGES[q.id];
+      state.awaitingAnswer = false;
+      state.answered = false;
+      state.selectedIndex = null;
+      els.signWrap.innerHTML = officialImage
+        ? `<img src="${officialImage}" alt="${escapeHtml(q.officialName)}" />`
+        : renderSign(q.sign);
+      els.questionCount.textContent = `Question ${state.index + 1} of ${QUESTION_BANK.length}`;
+      els.questionTag.textContent = `Question ${state.index + 1}`;
+      els.categoryLabel.textContent = q.category;
+      els.stageLabel.textContent = officialImage ? 'Official UK road sign' : 'Road sign';
+      els.hintText.textContent = 'Listen, then click the answer you think is right.';
+      els.meterBar.style.width = `${((state.index + 1) / QUESTION_BANK.length) * 100}%`;
+      els.options.innerHTML = q.choices.map((choice, idx) => `
+        <div class="option" data-index="${idx}" role="button" tabindex="0" aria-label="Answer ${LETTERS[idx]}">
+          <div class="letter">${LETTERS[idx]}</div>
+          <div>${escapeHtml(choice)}</div>
+        </div>
+      `).join('');
+      [...els.options.children].forEach(node => {
+        node.addEventListener('click', () => handleAnswerSelection(Number(node.dataset.index)));
+        node.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            handleAnswerSelection(Number(node.dataset.index));
+          }
+        });
+      });
+      els.revealBox.className = 'reveal';
+      els.revealBox.textContent = 'The quiz will wait for your answer before revealing it.';
+      setStatus(state.started ? 'Queued' : 'Ready');
+    }
+
+    function revealAnswer(selectedIndex = null) {
+      const q = QUESTION_BANK[state.index];
+      [...els.options.children].forEach((node, idx) => {
+        node.classList.toggle('selected', idx === selectedIndex);
+        node.classList.toggle('correct', idx === q.correctIndex);
+        node.classList.toggle('wrong', selectedIndex === idx && idx !== q.correctIndex);
+      });
+      els.revealBox.className = 'reveal show';
+      els.revealBox.innerHTML = `
+        <span class="title">Correct answer: ${LETTERS[q.correctIndex]}. ${escapeHtml(q.choices[q.correctIndex])}</span>
+        <div><strong>Official sign meaning:</strong> ${escapeHtml(q.officialName)}</div>
+        <div style="margin-top:6px;">Category: ${escapeHtml(q.category)}</div>
+      `;
+    }
+
+    function pickVoice() {
+      const selected = state.voices.find(v => v.name === els.voiceSelect.value);
+      if (selected) return selected;
+      return state.voices.find(v => /en-GB/i.test(v.lang) && /female|susan|sonia|hazel|libby|zira|uk english female|google uk english female/i.test(v.name))
+        || state.voices.find(v => /en-GB/i.test(v.lang))
+        || state.voices.find(v => /^en/i.test(v.lang))
+        || null;
+    }
+
+    function refreshVoices() {
+      if (!('speechSynthesis' in window)) {
+        els.voiceStatus.textContent = 'Speech synthesis is not available in this browser';
+        return;
+      }
+      state.voices = window.speechSynthesis.getVoices();
+      els.voiceSelect.innerHTML = '';
+      state.voices.forEach(voice => {
+        const option = document.createElement('option');
+        option.value = voice.name;
+        option.textContent = `${voice.name} (${voice.lang})`;
+        els.voiceSelect.appendChild(option);
+      });
+      state.selectedVoice = pickVoice();
+      if (state.selectedVoice) {
+        els.voiceSelect.value = state.selectedVoice.name;
+        els.voiceStatus.textContent = `${state.selectedVoice.name} (${state.selectedVoice.lang})`;
+      } else {
+        els.voiceStatus.textContent = 'Using browser default voice';
+      }
+    }
+
+    function speak(text) {
+      return new Promise(resolve => {
+        if (!('speechSynthesis' in window)) {
+          resolve();
+          return;
+        }
+        const utterance = new SpeechSynthesisUtterance(text);
+        state.selectedVoice = pickVoice();
+        if (state.selectedVoice) utterance.voice = state.selectedVoice;
+        utterance.lang = state.selectedVoice?.lang || 'en-GB';
+        utterance.rate = Number(els.rateRange.value);
+        utterance.pitch = 1.02;
+        utterance.volume = 1;
+        utterance.onstart = () => {
+          state.hasSpoken = true;
+          els.tapLayer.classList.remove('show');
+        };
+        utterance.onend = () => resolve();
+        utterance.onerror = () => resolve();
+        window.speechSynthesis.speak(utterance);
+      });
+    }
+
+    function questionSpeechText(q, index) {
+      return `Question ${index + 1}. What does this road sign mean? A. ${q.choices[0]}. B. ${q.choices[1]}. C. ${q.choices[2]}.`;
+    }
+
+    function answerSpeechText(q, selectedIndex = null) {
+      if (selectedIndex === null || selectedIndex === undefined) {
+        return `The correct answer is ${LETTERS[q.correctIndex]}. ${q.choices[q.correctIndex]}.`;
+      }
+      if (selectedIndex === q.correctIndex) {
+        return `Correct. The answer is ${LETTERS[q.correctIndex]}. ${q.choices[q.correctIndex]}.`;
+      }
+      return `You chose ${LETTERS[selectedIndex]}. The correct answer is ${LETTERS[q.correctIndex]}. ${q.choices[q.correctIndex]}.`;
+    }
+
+    async function playCurrentQuestion() {
+      clearTimers();
+      state.speechToken += 1;
+      const myToken = state.speechToken;
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      const q = QUESTION_BANK[state.index];
+      state.awaitingAnswer = false;
+      setStatus('Speaking question');
+      await speak(questionSpeechText(q, state.index));
+      if (myToken !== state.speechToken) return;
+      state.awaitingAnswer = true;
+      setStatus('Choose your answer');
+    }
+
+    async function handleAnswerSelection(selectedIndex) {
+      if (!state.awaitingAnswer || state.answered) return;
+      state.awaitingAnswer = false;
+      state.answered = true;
+      state.selectedIndex = selectedIndex;
+      state.speechToken += 1;
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      const q = QUESTION_BANK[state.index];
+      revealAnswer(selectedIndex);
+      setStatus('Speaking answer');
+      await speak(answerSpeechText(q, selectedIndex));
+      if (state.autoplay && state.index < QUESTION_BANK.length - 1) {
+        setStatus('Loading next question');
+        await after(1400);
+        state.index += 1;
+        renderQuestion();
+        playCurrentQuestion();
+      } else if (state.autoplay && state.index >= QUESTION_BANK.length - 1) {
+        setStatus('Finished 50 questions, quiz complete');
+        els.hintText.textContent = 'Finished 50 questions. You have reached the end of the quiz.';
+        els.revealBox.classList.add('show');
+        els.revealBox.innerHTML = '<span class="title">Finished 50 questions.</span>You have reached the end of the full 50-question graphic road sign quiz. Use Previous to review or Start voice to run it again from question 1.';
+      } else {
+        setStatus('Ready');
+      }
+    }
+
+    function startAutoplay() {
+      state.started = true;
+      state.autoplay = true;
+      els.modeStatus.textContent = 'Autoplay all 50';
+      playCurrentQuestion();
+    }
+
+    function replayCurrent() {
+      state.started = true;
+      state.autoplay = false;
+      els.modeStatus.textContent = 'Manual replay';
+      renderQuestion();
+      playCurrentQuestion();
+    }
+
+    function goPrev() {
+      state.index = Math.max(0, state.index - 1);
+      renderQuestion();
+      replayCurrent();
+    }
+
+    function goNext() {
+      state.index = Math.min(QUESTION_BANK.length - 1, state.index + 1);
+      renderQuestion();
+      replayCurrent();
+    }
+
+    function attemptAutoStart() {
+      startAutoplay();
+      setTimeout(() => {
+        if (!state.hasSpoken) {
+          els.tapLayer.classList.add('show');
+          setStatus('Tap start if your browser blocked speech');
+        }
+      }, 1200);
+    }
+
+    els.startBtn.addEventListener('click', startAutoplay);
+    els.tapStartBtn.addEventListener('click', startAutoplay);
+    els.replayBtn.addEventListener('click', replayCurrent);
+    els.prevBtn.addEventListener('click', goPrev);
+    els.nextBtn.addEventListener('click', goNext);
+    els.voiceSelect.addEventListener('change', () => {
+      state.selectedVoice = pickVoice();
+      els.voiceStatus.textContent = state.selectedVoice ? `${state.selectedVoice.name} (${state.selectedVoice.lang})` : 'Using browser default voice';
+    });
+    els.rateRange.addEventListener('input', () => {
+      els.rateValue.textContent = `${Number(els.rateRange.value).toFixed(2)}x`;
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (!('speechSynthesis' in window)) return;
+      if (document.hidden) window.speechSynthesis.pause();
+      else window.speechSynthesis.resume();
+    });
+
+    renderQuestion();
+    refreshVoices();
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = refreshVoices;
+    }
+    setTimeout(attemptAutoStart, 700);
+  </script>
+</body>
+</html>
