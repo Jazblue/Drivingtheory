@@ -129,5 +129,10 @@
     els.startBtn.addEventListener('click', startTest); els.restartBtn.addEventListener('click', startTest); els.nextBtn.addEventListener('click', nextQuestion); els.replayVoiceBtn.addEventListener('click', () => { const q = state.active[state.current]; if (q) speak(questionSpeech(q)); });
     window.addEventListener('beforeunload', stopSpeech);
   </script>
+
+  <p style="margin-top:14px;color:#666;font-size:13px;">Visitors: <span id="visitor-count">loading…</span></p>
+  <script src="counter.js"></script>
 </body>
+</html>
+
 </html>
